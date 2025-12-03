@@ -1,0 +1,17 @@
+<h2>Insights for {{ applicant.first_name }}</h2>
+
+<div style="display: flex; gap: 20px;">
+    <div style="width: 50%;">
+        <h3>🤖 AI Analysis</h3>
+        <p><strong>Skills:</strong> {{ skills }}</p>
+        <p><strong>Education:</strong> {{ education }}</p>
+        <p><strong>Experience:</strong> {{ experience }}</p>
+    </div>
+
+    <div style="width: 50%;">
+        <h3>📄 Raw Text Read by TrOCR</h3>
+        <pre style="background: #f4f4f4; padding: 10px; white-space: pre-wrap;">
+{{ raw_text }}
+        </pre>
+    </div>
+</div>

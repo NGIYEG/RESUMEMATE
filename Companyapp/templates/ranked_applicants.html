@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-10 px-4">
+  <div class="max-w-6xl mx-auto">
+    
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border-l-4 border-cyan-500">
+      <h1 class="text-3xl font-bold text-gray-800">{{ job.post.title }}</h1>
+      <p class="text-gray-500">{{ job.department.name }} • Deadline: {{ job.deadline|date:"M d, Y" }}</p>
+      
+      <div class="mt-4 flex gap-4 text-sm">
+        <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
+          Required Exp: {{ job.min_experience_years }}+ Years
+        </span>
+        <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
+          Education: {{ job.required_education }}
+        </span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <h2 class="font-bold text-gray-700 text-lg">Ranked Applicants ({{ candidates|length }})</h2>
+        <span class="text-xs text-gray-400">Sorted by AI Match Score</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="text-gray-500 text-sm bg-gray-50 uppercase tracking-wider">
+              <th class="px-6 py-3 font-medium">Rank</th>
+              <th class="px-6 py-3 font-medium">Candidate</th>
+              <th class="px-6 py-3 font-medium">Match Score</th>
+              <th class="px-6 py-3 font-medium">Key Insights</th>
+              <th class="px-6 py-3 font-medium">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {% for candidate in candidates %}
+            <tr class="hover:bg-blue-50 transition duration-150">
+              
+              <td class="px-6 py-4">
+                <div class="flex items-center justify-center w-8 h-8 rounded-full 
+                  {% if forloop.counter == 1 %}bg-yellow-100 text-yellow-700 font-bold border border-yellow-300
+                  {% elif forloop.counter == 2 %}bg-gray-200 text-gray-700 font-bold border border-gray-300
+                  {% elif forloop.counter == 3 %}bg-orange-100 text-orange-800 font-bold border border-orange-300
+                  {% else %}text-gray-400 font-semibold{% endif %}">
+                  {{ forloop.counter }}
+                </div>
+              </td>
+
+              <td class="px-6 py-4">
+                <div>
+                  <p class="font-bold text-gray-800">{{ candidate.applicant.user.get_full_name|default:candidate.applicant.user.username }}</p>
+                  <p class="text-xs text-gray-500">Applied: {{ candidate.application_date|date:"M d" }}</p>
+                </div>
+              </td>
+
+              <td class="px-6 py-4 w-48">
+                <div class="flex items-center gap-3">
+                  <span class="text-xl font-bold 
+                    {% if candidate.score >= 80 %}text-green-600
+                    {% elif candidate.score >= 50 %}text-yellow-600
+                    {% else %}text-red-500{% endif %}">
+                    {{ candidate.score }}%
+                  </span>
+                  <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div class="h-2.5 rounded-full 
+                      {% if candidate.score >= 80 %}bg-green-500
+                      {% elif candidate.score >= 50 %}bg-yellow-500
+                      {% else %}bg-red-500{% endif %}" 
+                      style="width: {{ candidate.score }}%"></div>
+                  </div>
+                </div>
+              </td>
+
+              <td class="px-6 py-4 text-sm text-gray-600 max-w-xs">
+                <div class="mb-1">
+                  <span class="font-semibold text-xs text-gray-400 uppercase">Skills Found:</span>
+                  <div class="flex flex-wrap gap-1 mt-1">
+                    {% for skill in candidate.resume_skills|slice:":3" %}
+                      <span class="px-2 py-0.5 bg-gray-100 rounded text-xs border border-gray-200">{{ skill }}</span>
+                    {% empty %}
+                      <span class="text-xs italic text-red-400">No skills parsed</span>
+                    {% endfor %}
+                    {% if candidate.resume_skills|length > 3 %}
+                      <span class="text-xs text-gray-400">+{{ candidate.resume_skills|length|add:"-3" }} more</span>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div>
+                    <span class="font-semibold text-xs text-gray-400 uppercase">Latest Role:</span>
+                    <p class="truncate text-xs">
+                        {{ candidate.resume_experience.0|default:"-- None --" }}
+                    </p>
+                </div>
+              </td>
+
+              <td class="px-6 py-4">
+                <a href="#" class="text-cyan-600 hover:text-cyan-800 font-semibold text-sm hover:underline">
+                  View Profile &rarr;
+                </a>
+              </td>
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center py-10 text-gray-500">
+                    No applicants have applied for this job yet.
+                </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
