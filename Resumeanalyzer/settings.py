@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',  # Added for media files
+                'Companyapp.context_processors.global_job_id', # Custom context processor
             ],
         },
     },

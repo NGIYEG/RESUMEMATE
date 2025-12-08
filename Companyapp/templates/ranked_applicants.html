@@ -81,7 +81,8 @@
                       {% if candidate.score >= 80 %}bg-green-500
                       {% elif candidate.score >= 50 %}bg-yellow-500
                       {% else %}bg-red-500{% endif %}" 
-                      style="width: {{ candidate.score }}%"></div>
+                      style="width: {{ candidate.score }} %;" >
+                    </div>
                   </div>
                 </div>
                 
@@ -187,17 +188,7 @@
       </div>
     </div>
 
-    <!-- Back Button -->
-    <div class="mt-8 flex gap-4">
-      <a href="{% url 'job_advert' %}" 
-         class="inline-block px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-        ← Back to Jobs
-      </a>
-      <a href="{% url 'analyzer:dashboard' %}" 
-         class="inline-block px-6 py-3 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition">
-        View Analytics Dashboard
-      </a>
-    </div>
+   
   </div>
 </div>
 {% endblock %}

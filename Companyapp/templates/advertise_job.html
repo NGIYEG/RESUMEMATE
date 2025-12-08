@@ -23,6 +23,32 @@
         </div>
       </div>
 
+      <!-- Academic Courses Selection (Dynamic) -->
+      <div id="coursesContainer" class="border-2 border-purple-200 rounded-lg p-6 bg-purple-50 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <label class="block text-sm font-bold text-gray-800">
+            🎓 Select Accepted Academic Courses <span class="text-red-500">*</span>
+          </label>
+          <button type="button" id="selectAllCoursesBtn" 
+                  class="px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+            Select All
+          </button>
+        </div>
+        
+        <p class="text-xs text-gray-600 mb-4">
+          Choose which academic courses are acceptable for this specific vacancy.
+          Applicants must have studied at least one of these courses.
+        </p>
+        
+        <div id="coursesList" class="space-y-2 max-h-64 overflow-y-auto">
+          <!-- Courses will be loaded dynamically here -->
+        </div>
+        
+        <div id="coursesError" class="hidden mt-3">
+          <p class="text-red-600 text-sm font-semibold">⚠️ You must select at least one course</p>
+        </div>
+      </div>
+
       <hr class="border-gray-200">
 
       <h3 class="text-lg font-semibold text-gray-800">Candidate Requirements</h3>
@@ -33,7 +59,7 @@
             {{ form.min_experience_years }}
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Required Education</label>
+            <label class="block text-sm font-medium text-gray-700">Required Education Level</label>
             {{ form.required_education }}
           </div>
       </div>
@@ -46,7 +72,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-            <label class="block text-sm font-medium text-gray-700">Deadline</label>
+            <label class="block text-sm font-medium text-gray-700">Application Deadline</label>
             {{ form.deadline }}
         </div>
         <div>
@@ -60,8 +86,8 @@
         {{ form.description }}
       </div>
 
-      <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-lg">
-        Publish Vacancy
+      <button type="submit" id="submitBtn" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-lg transition">
+        📢 Publish Vacancy
       </button>
     </form>
   </div>
@@ -71,16 +97,26 @@
 document.addEventListener("DOMContentLoaded", () => {
     const deptSelect = document.getElementById("id_department");
     const postSelect = document.getElementById("id_post");
+    const coursesContainer = document.getElementById("coursesContainer");
+    const coursesList = document.getElementById("coursesList");
+    const coursesError = document.getElementById("coursesError");
+    const selectAllBtn = document.getElementById("selectAllCoursesBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const form = document.getElementById("jobForm");
+
+    let currentCourses = [];
 
     // Add Tailwind classes to inputs automatically
     document.querySelectorAll('input, select, textarea').forEach(el => {
         el.classList.add('w-full', 'rounded-lg', 'border-gray-300', 'p-3', 'border');
     });
 
-    // Dynamic Loading Logic
+    // Load posts when department changes
     deptSelect.addEventListener("change", function() {
         const deptId = this.value;
         postSelect.innerHTML = '<option value="">Loading...</option>';
+        coursesContainer.classList.add('hidden');
+        coursesList.innerHTML = '';
 
         if (deptId) {
             fetch(`/load-posts/?department=${deptId}`)
@@ -93,10 +129,136 @@ document.addEventListener("DOMContentLoaded", () => {
                         option.textContent = post.title;
                         postSelect.appendChild(option);
                     });
+                })
+                .catch(error => {
+                    console.error('Error loading posts:', error);
+                    postSelect.innerHTML = '<option value="">Error loading roles</option>';
                 });
         } else {
             postSelect.innerHTML = '<option value="">Select Department First</option>';
         }
+    });
+
+    // Load courses when post changes
+    postSelect.addEventListener("change", function() {
+        const postId = this.value;
+        coursesList.innerHTML = '';
+        coursesContainer.classList.add('hidden');
+        coursesError.classList.add('hidden');
+        currentCourses = [];
+
+        if (postId) {
+            fetch(`/load-courses/?post=${postId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.courses.length > 0) {
+                        currentCourses = data.courses;
+                        renderCourses(data.courses);
+                        coursesContainer.classList.remove('hidden');
+                    } else {
+                        coursesList.innerHTML = `
+                            <div class="text-center py-8 text-red-600">
+                                <p class="font-semibold">⚠️ No academic courses defined for this position</p>
+                                <p class="text-sm mt-2">Please update the position settings to add required courses.</p>
+                            </div>
+                        `;
+                        coursesContainer.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading courses:', error);
+                    coursesList.innerHTML = '<p class="text-red-600">Error loading courses</p>';
+                    coursesContainer.classList.remove('hidden');
+                });
+        }
+    });
+
+    // Render courses as checkboxes
+    function renderCourses(courses) {
+        coursesList.innerHTML = '';
+        
+        courses.forEach(course => {
+            const label = document.createElement('label');
+            label.className = 'flex items-center p-3 hover:bg-purple-100 rounded-lg cursor-pointer transition border border-purple-200';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'selected_courses';
+            checkbox.value = course.id;
+            checkbox.className = 'mr-3 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded';
+            checkbox.addEventListener('change', validateCourseSelection);
+            
+            const text = document.createElement('span');
+            text.className = 'text-gray-700 font-medium';
+            text.textContent = course.name;
+            
+            if (course.code) {
+                const code = document.createElement('span');
+                code.className = 'ml-2 text-xs text-purple-600';
+                code.textContent = `(${course.code})`;
+                text.appendChild(code);
+            }
+            
+            label.appendChild(checkbox);
+            label.appendChild(text);
+            coursesList.appendChild(label);
+        });
+    }
+
+    // Select/Deselect All functionality
+    selectAllBtn.addEventListener('click', function() {
+        const checkboxes = coursesList.querySelectorAll('input[type="checkbox"]');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        checkboxes.forEach(cb => {
+            cb.checked = !allChecked;
+        });
+        
+        this.textContent = allChecked ? 'Select All' : 'Deselect All';
+        validateCourseSelection();
+    });
+
+    // Validate course selection
+    function validateCourseSelection() {
+        const checkboxes = coursesList.querySelectorAll('input[type="checkbox"]');
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+        
+        if (anyChecked) {
+            coursesError.classList.add('hidden');
+            return true;
+        } else if (checkboxes.length > 0) {
+            coursesError.classList.remove('hidden');
+            return false;
+        }
+        return true; // No courses loaded yet
+    }
+
+    // Form validation before submit
+    form.addEventListener('submit', function(e) {
+        const postId = postSelect.value;
+        
+        if (postId && currentCourses.length > 0) {
+            if (!validateCourseSelection()) {
+                e.preventDefault();
+                coursesError.classList.remove('hidden');
+                
+                // Scroll to error
+                coursesContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Show alert
+                alert('⚠️ Please select at least one academic course before submitting.');
+                return false;
+            }
+        }
+        
+        // Disable submit button to prevent double submission
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        `;
     });
 });
 </script>
