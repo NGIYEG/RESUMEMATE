@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+        
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Current Openings</h1>
+            <p class="text-lg text-slate-600">Find your next role and apply in seconds.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {% for job in jobs %}
+            <div class="flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden h-full hover:shadow-lg transition-shadow duration-300">
+                
+                <div class="p-8 grow">
+                    <span class="text-cyan-600 font-bold text-xs uppercase tracking-wider mb-2 block">
+                        {{ job.department.name }}
+                    </span>
+
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">
+                        {{ job.post.title }}
+                    </h2>
+                    
+                    <div class="text-slate-600 text-base mb-8 leading-relaxed">
+                        {{ job.description|linebreaks }}
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-6 border border-slate-100">
+                        
+                        <h3 class="text-xs font-bold text-slate-400 uppercase mb-5 tracking-widest flex items-center gap-2">
+                            Key Requirements
+                        </h3>
+                        
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <span class="mt-2 w-1.5 h-1.5 bg-cyan-500 rounded-full shrink-0"></span>
+                                <span class="text-slate-600 text-sm">
+                                    <strong class="text-slate-900">Experience:</strong> Must have at least <strong class="text-slate-900">{{ job.min_experience_years }} years</strong> of relevant experience.
+                                </span>
+                            </li>
+                            
+                            <li class="flex items-start gap-3">
+                                <span class="mt-2 w-1.5 h-1.5 bg-cyan-500 rounded-full shrink-0"></span>
+                                <div class="flex flex-col w-full">
+                                    <span class="text-slate-600 text-sm">
+                                        <strong class="text-slate-900">Education:</strong> 
+                                        {% with first_course=job.selected_courses.all.0 %}
+                                            <span class="font-semibold text-slate-900">
+                                            {% if first_course %}
+                                                {% if "bachelor" in job.required_education|lower or "degree" in job.required_education|lower %}
+                                                    BSc. {{ first_course.name }}
+                                                {% elif "master" in job.required_education|lower %}
+                                                    MSc. {{ first_course.name }}
+                                                {% elif "diploma" in job.required_education|lower %}
+                                                    Dip. {{ first_course.name }}
+                                                {% else %}
+                                                    {{ job.required_education }} in {{ first_course.name }}
+                                                {% endif %}
+                                                <span class="text-slate-400 font-normal text-xs ml-1">(or related)</span>
+                                            {% else %}
+                                                {{ job.required_education }}
+                                            {% endif %}
+                                            </span>
+                                        {% endwith %}
+                                    </span>
+                                    
+                                    {% if job.selected_courses.all %}
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        {% for course in job.selected_courses.all %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-purple-100 text-purple-700">
+                                            {{ course.name }}
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+
+                            <li class="flex items-start gap-3">
+                                <span class="mt-2 w-1.5 h-1.5 bg-cyan-500 rounded-full shrink-0"></span>
+                                <div class="w-full">
+                                    <strong class="text-slate-900 text-sm block mb-1">Skills:</strong>
+                                    <div class="flex flex-wrap gap-2">
+                                        {% for skill in job.skill_list %}
+                                        <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600">
+                                            {{ skill }}
+                                        </span>
+                                        {% empty %}
+                                        <span class="text-sm text-slate-600">{{ job.required_skills }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-8 pt-0 mt-auto">
+                    <div class="flex items-center justify-between border-t border-slate-100 pt-6">
+                        <div class="text-sm">
+                             <span class="job-countdown font-mono font-bold text-slate-700" data-deadline="{{ job.deadline|date:'c' }}">
+                                Calculating...
+                            </span>
+                             <span class="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1">Time Left</span>
+                        </div>
+                    <a href="{% url 'apply_job' %}?job_id={{ job.id }}" 
+                    class="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-slate-900 hover:bg-slate-800 transition-all shadow-sm hover:shadow-md">
+                        Apply Now
+                    </a>
+                                        </div>
+                </div>
+
+            </div>
+            {% empty %}
+             <div class="col-span-full text-center py-20">
+                <p class="text-slate-500 text-lg">No job openings available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function updateCountdowns() {
+        const countdowns = document.querySelectorAll('.job-countdown');
+        const now = new Date().getTime();
+
+        countdowns.forEach(timer => {
+            const deadlineStr = timer.getAttribute('data-deadline');
+            if (!deadlineStr) return;
+
+            const deadline = new Date(deadlineStr).getTime();
+            const distance = deadline - now;
+
+            if (distance < 0) {
+                timer.innerHTML = "<span class='text-red-500'>Expired</span>";
+                // Optional: Disable the apply button for this card
+                const btn = timer.closest('.p-8').querySelector('a');
+                if(btn) {
+                    btn.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                    btn.innerText = "Closed";
+                }
+            } else {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                
+                let output = "";
+                if (days > 0) output += `${days}d `;
+                output += `${hours}h`; 
+
+                if (days === 0) timer.classList.add("text-orange-600");
+
+                timer.innerHTML = output;
+            }
+        });
+    }
+    updateCountdowns();
+    setInterval(updateCountdowns, 60000); 
+});
+</script>
+{% endblock %}

@@ -151,19 +151,32 @@
 
           <!-- Job Selection -->
           <div class="mb-6">
-            <label for="{{ form.job.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
-              Select Position <span class="text-red-500">*</span>
-            </label>
-            {{ form.job }}
-            {% if form.job.errors %}
-              <div class="mt-2 text-sm text-red-600 flex items-center gap-1">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-                {{ form.job.errors }}
-              </div>
-            {% endif %}
-          </div>
+              <label for="{{ form.job.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                Applying For <span class="text-red-500">*</span>
+              </label>
+
+              {% if selected_job %}
+                <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+                    <div class="p-2 bg-blue-500 rounded-full text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-800">{{ selected_job.post.title }}</p>
+                        <p class="text-xs text-gray-600">{{ selected_job.department.name }}</p>
+                    </div>
+                </div>
+                
+                <div class="hidden">
+                    {{ form.job }}
+                </div>
+              
+              {% else %}
+                {{ form.job }}
+                {% if form.job.errors %}
+                  <div class="mt-2 text-sm text-red-600">{{ form.job.errors }}</div>
+                {% endif %}
+              {% endif %}
+        </div>
 
           <!-- Resume Upload -->
           <div class="mb-6">

@@ -4,123 +4,134 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-4">
   <div class="max-w-7xl mx-auto">
     
-    <!-- Header -->
     <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-800 mb-3">Active Job Advertisements</h1>
-      <p class="text-gray-600 text-lg">Manage and review your job postings</p>
-      <div class="mt-6 flex justify-center gap-4">
-        <a href="{% url 'job_advert' %}" 
-           class="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-semibold transition shadow-md">
-          + Create New Job
-        </a>
-        <a href="{% url 'add' %}" 
-           class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition shadow-md">
-          + Add Department/Position
-        </a>
-      </div>
+      <h1 class="text-4xl font-bold text-gray-800 mb-3">Manage Job Advertisements</h1>
+      <p class="text-gray-600 text-lg">Monitor applications, update details, or remove postings.</p>
+      
+      
     </div>
 
-    <!-- Jobs Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {% for item in job_data %}
-      <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden border-t-4 border-cyan-500">
+      <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100 flex flex-col h-full">
         
-        <!-- Job Header --> 
-        <div class="bg-linear-to-r from-cyan-500 to-blue-600 px-6 py-4">
-          <h3 class="text-xl font-bold text-white mb-1">{{ item.job.post.title }}</h3>
-          <p class="text-cyan-100 text-sm">{{ item.job.department.name }}</p>
+        <div class="bg-linear-to-r from-cyan-600 to-blue-600 px-6 py-4 flex justify-between items-start">
+          <div>
+            <h3 class="text-lg font-bold text-white leading-tight mb-1">{{ item.job.post.title }}</h3>
+            <span class="inline-block px-2 py-0.5 bg-white/20 text-white text-xs rounded backdrop-blur-sm">
+              {{ item.job.department.name }}
+            </span>
+          </div>
+          <span class="px-2 py-1 bg-green-400 text-green-900 text-[10px] font-bold uppercase rounded shadow-sm">
+            Active
+          </span>
         </div>
 
-        <!-- Job Details -->
-        <div class="p-6 space-y-4">
+        <div class="p-6 flex-grow space-y-4">
           
-          <!-- Requirements -->
-          <div>
-            <p class="text-xs text-gray-500 uppercase font-semibold mb-2">Requirements</p>
-            <div class="space-y-1 text-sm text-gray-700">
-              <p>📊 Experience: <strong>{{ item.job.min_experience_years }}+ years</strong></p>
-              <p>🎓 Education: <strong>{{ item.job.required_education }}</strong></p>
-              <p>📅 Deadline: <strong>{{ item.job.deadline|date:"M d, Y" }}</strong></p>
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+             <div class="text-center">
+                <p class="text-xs text-gray-500 uppercase font-bold">Applicants</p>
+                <p class="text-2xl font-bold text-cyan-600">{{ item.applicant_count }}</p>
+             </div>
+             <div class="h-8 w-px bg-gray-300"></div>
+             <div class="text-center">
+                <p class="text-xs text-gray-500 uppercase font-bold">Expires</p>
+                <p class="text-sm font-semibold text-gray-700">{{ item.job.deadline|date:"M d" }}</p>
+             </div>
+          </div>
+
+          <div class="text-sm space-y-2">
+<div class="flex justify-between border-b border-gray-100 pb-2">
+  <span class="text-gray-500">Education:</span>
+  <span class="font-medium text-gray-800 text-right truncate w-3/5" title="{{ item.job.required_education }}">
+    
+    {% with first_course=item.selected_courses.0 %}
+        {% if first_course %}
+            {% if "bachelor" in item.job.required_education|lower or "degree" in item.job.required_education|lower %}
+                BSc. {{ first_course.name }}
+            {% elif "master" in item.job.required_education|lower %}
+                MSc. {{ first_course.name }}
+            {% elif "diploma" in item.job.required_education|lower %}
+                Dip. {{ first_course.name }}
+            {% else %}
+                {{ item.job.required_education }} in {{ first_course.name }}
+            {% endif %}
+
+            {% if item.selected_courses|length > 1 %}
+                <span class="text-xs text-gray-400" title="Also accepts: {% for c in item.selected_courses %}{{ c.name }}, {% endfor %}">
+                    (+{{ item.selected_courses|length|add:"-1" }})
+                </span>
+            {% endif %}
+        
+        {% else %}
+            {{ item.job.required_education }}
+        {% endif %}
+    {% endwith %}
+
+  </span>
+</div>            <div class="flex justify-between border-b border-gray-100 pb-2">
+              <span class="text-gray-500">Experience:</span>
+              <span class="font-medium text-gray-800">{{ item.job.min_experience_years }}+ Years</span>
             </div>
           </div>
 
-          <!-- Selected Courses -->
           {% if item.selected_courses %}
           <div>
-            <p class="text-xs text-gray-500 uppercase font-semibold mb-2">Required Courses</p>
+            <p class="text-xs text-gray-400 uppercase font-semibold mb-2">Accepted Courses</p>
             <div class="flex flex-wrap gap-1">
-              {% for course in item.selected_courses|slice:":2" %}
-                <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium border border-purple-200">
+              {% for course in item.selected_courses|slice:":3" %}
+                <span class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-[10px] font-medium border border-purple-100">
                   {{ course.name }}
                 </span>
               {% endfor %}
-              {% if item.selected_courses|length > 2 %}
-                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
-                  +{{ item.selected_courses|length|add:"-2" }}
+              {% if item.selected_courses|length > 3 %}
+                <span class="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-[10px] border border-gray-200">
+                  +{{ item.selected_courses|length|add:"-3" }} more
                 </span>
               {% endif %}
             </div>
           </div>
           {% endif %}
 
-          <!-- Applicants Count -->
-          <div class="pt-4 border-t border-gray-200">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-                </svg>
-                <span class="text-sm text-gray-600 font-medium">
-                  {{ item.applicant_count }} Applicant{{ item.applicant_count|pluralize }}
-                </span>
-              </div>
-              {% if item.job.require_course_match %}
-                <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold">
-                  Course Match Required
-                </span>
-              {% endif %}
-            </div>
-          </div>
-
         </div>
 
-        <!-- Actions -->
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex flex-col gap-3">
-  
-  <a href="{% url 'rankings' item.job.id %}" 
-     class="w-full px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-sm font-semibold text-center transition shadow-xs">
-    View Applicants
-  </a>
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex flex-col gap-3 mt-auto">
+          
+          <a href="{% url 'rankings' item.job.id %}" 
+             class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-sm font-bold transition shadow-sm hover:shadow">
+             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            Review Candidates
+          </a>
 
-  <div class="flex gap-2">
-    <a href="{% url 'edit_job' item.job.id %}" 
-       class="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold text-center transition border border-gray-300">
-       Edit
-    </a>
-
-    <form action="{% url 'delete_job' item.job.id %}" method="POST" class="flex-1" 
-          onsubmit="return confirm('Are you sure you want to delete this job? This action cannot be undone.');">
-      {% csrf_token %}
-      <button type="submit" 
-              class="w-full px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-semibold text-center transition border border-red-200">
-        Delete
-      </button>
-    </form>
-  </div>
-
-</div>
+          <div class="flex gap-2">
+              <a href="{% url 'edit_job' item.job.id %}" 
+                 class="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 rounded-lg text-sm font-medium transition">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                 Edit
+              </a>
+              
+              <a href="{% url 'delete_job' item.job.id %}" 
+                 class="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded-lg text-sm font-medium transition">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                 Delete
+              </a>
+          </div>
+        </div>
 
       </div>
       {% empty %}
       <div class="col-span-full">
-        <div class="bg-white rounded-xl shadow-md p-12 text-center">
-          <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <h3 class="text-xl font-semibold text-gray-700 mb-2">No Job Advertisements Yet</h3>
-          <p class="text-gray-500 mb-6">Start by creating your first job advertisement</p>
+        <div class="bg-white rounded-xl shadow-md p-16 text-center border border-dashed border-gray-300">
+          <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">No Active Jobs</h3>
+          <p class="text-gray-500 mb-8 max-w-md mx-auto">Get started by creating your first job advertisement to attract top talent.</p>
           <a href="{% url 'job_advert' %}" 
-             class="inline-block px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-semibold transition">
+             class="inline-block px-8 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-bold transition shadow-lg hover:shadow-xl">
             Create Job Advertisement
           </a>
         </div>

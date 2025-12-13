@@ -132,12 +132,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Additional locations of static files
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    # BASE_DIR / 'static',
 ]
 
-# ============================================
-# MEDIA FILES (User Uploads - CRITICAL!)
-# ============================================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -146,24 +143,20 @@ os.makedirs(MEDIA_ROOT / 'resumes', exist_ok=True)
 os.makedirs(MEDIA_ROOT / 'documents', exist_ok=True)
 os.makedirs(MEDIA_ROOT / 'resume_images', exist_ok=True)
 
-# ============================================
-# FILE UPLOAD SETTINGS
-# ============================================
+
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
 # Allowed file extensions
 ALLOWED_RESUME_EXTENSIONS = ['.pdf', '.doc', '.docx']
 
-# File upload handlers (default)
+
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
-# ============================================
-# CELERY CONFIGURATION
-# ============================================
+
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
