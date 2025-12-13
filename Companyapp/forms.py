@@ -1,6 +1,7 @@
 from django import forms
 from .models import Post, Department, JobAdvertised, AcademicCourse
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 class AcademicCourseForm(forms.ModelForm):
     """Form for creating new academic courses"""
@@ -216,4 +217,39 @@ class DepartmentForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         if name:
             name = name.strip().title()
-        return name
+        return 
+    
+
+
+
+
+from django.contrib.auth.models import User
+from .models import Company
+
+class CompanyRegisterForm(forms.ModelForm):
+    # User Account Fields
+    username = forms.CharField(widget=forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "Username"}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "Company Email"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "Password"}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "Confirm Password"}))
+
+    # Company Profile Fields
+    company_name = forms.CharField(widget=forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "Company Name (e.g. TechCorp)"}))
+    location = forms.CharField(widget=forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "Headquarters Location"}))
+    logo = forms.ImageField(required=False, widget=forms.FileInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2"}))
+
+    class Meta:
+        model = Company
+        fields = ['company_name', 'location', 'website', 'description', 'logo']
+        widgets = {
+            'website': forms.URLInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "https://..."}),
+            'description': forms.Textarea(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "rows": 3, "placeholder": "What does your company do?"}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if password != confirm_password:
+            raise forms.ValidationError("Passwords do not match")
+        return cleaned_data

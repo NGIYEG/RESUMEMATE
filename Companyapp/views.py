@@ -1,10 +1,59 @@
-from django.shortcuts import get_object_or_404, render, redirect
-from .matcher import calculate_match_percentage
-from .models import Application, Department, JobAdvertised, Post, AcademicCourse
-from Extractionapp.models import ResumeExtraction
-from .forms import DepartmentForm, PostForm, JobAdvertisedForm, AcademicCourseForm
 from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import Group, User
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import AcademicCourseForm, CompanyRegisterForm, DepartmentForm, JobAdvertisedForm, PostForm
+from .matcher import calculate_match_percentage
+from .models import AcademicCourse, Application, Company, Department, JobAdvertised, Post
+from Extractionapp.models import ResumeExtraction
+
+def company_register_view(request):
+    if request.method == 'POST':
+        form = CompanyRegisterForm(request.POST, request.FILES)
+        if form.is_valid():
+            # 1. Create User Account
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password']
+            )
+            
+            # 2. Create Company Profile linked to User
+            company = form.save(commit=False)
+            company.user = user
+            company.save()
+            
+            # 3. Assign to 'Company' Group
+            company_group, _ = Group.objects.get_or_create(name='Company_Account')
+            user.groups.add(company_group)
+            
+            messages.success(request, f"Welcome, {company.company_name}! Your company account is ready.")
+            login(request, user)
+            return redirect('analyzer:dashboard') 
+    else:
+        form = CompanyRegisterForm()
+    return render(request, 'company_register.html', {'form': form})
+
+def company_login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            # Check if this user is a Company
+            if hasattr(user, 'company_profile'):
+                login(request, user)
+                return redirect('manage_jobs')
+            else:
+                messages.error(request, "This account is not registered as a Company.")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'company_login.html', {'form': form})
+
+def company_logout_view(request):
+    logout(request)
+    return redirect('company_login')
 
 def add_department_and_post(request):
     """Handle department, post, and academic course creation"""
@@ -18,7 +67,7 @@ def add_department_and_post(request):
             dept_form = DepartmentForm(request.POST)
             if dept_form.is_valid():
                 dept_form.save()
-                messages.success(request, "✅ Department added successfully!")
+                # messages.success(request, "✅ Department added successfully!")
                 return redirect('add')
             else:
                 messages.error(request, "❌ Please fix the errors in the department form.")
@@ -28,7 +77,7 @@ def add_department_and_post(request):
             course_form = AcademicCourseForm(request.POST)
             if course_form.is_valid():
                 course = course_form.save()
-                messages.success(request, f"✅ Academic course '{course.name}' added successfully!")
+                # messages.success(request, f"✅ Academic course '{course.name}' added successfully!")
                 return redirect('add')
             else:
                 messages.error(request, "❌ Please fix the errors in the course form.")
@@ -249,3 +298,6 @@ def delete_job(request, job_id):
     
     # Render a simple confirmation page
     return render(request, 'delete_confirm.html', {'job': job})
+
+
+

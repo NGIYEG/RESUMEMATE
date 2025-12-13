@@ -55,7 +55,7 @@ class UserRegisterForm(forms.ModelForm):
         help_texts = {
             'username': None,  
         }
-        
+
         widgets = {
             'username': forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2"}),
             'email': forms.EmailInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2"}),
@@ -72,15 +72,55 @@ class UserRegisterForm(forms.ModelForm):
             raise forms.ValidationError("Passwords do not match")
         return cleaned_data
 
+# Applicantapp/forms.py
+
+# Applicantapp/forms.py
+
 class ApplicantProfileForm(forms.ModelForm):
-    """Handles the Resume & Details Upload during Sign Up"""
+    """Handles Profile Updates"""
+    # These fields are mainly for the "Edit Profile" page
+    first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        "class": "w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-600 focus:border-cyan-600"
+    }))
+    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        "class": "w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-600 focus:border-cyan-600"
+    }))
+
     class Meta:
         model = Applicant
-        fields = ['phone', 'location', 'linkedIn_profile', 'portfolio_link', 'resume']
+        fields = ['profile_picture', 'bio', 'phone', 'location', 'linkedIn_profile', 'portfolio_link', 'resume']
         widgets = {
-            'phone': forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "e.g., +254..."}),
-            'location': forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2", "placeholder": "City, Country"}),
-            'linkedIn_profile': forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2"}),
-            'portfolio_link': forms.URLInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2"}),
-            'resume': forms.FileInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2"}),
+            'profile_picture': forms.FileInput(attrs={"class": "w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100"}),
+            'bio': forms.Textarea(attrs={"rows": 4, "class": "w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-600 focus:border-cyan-600", "placeholder": "Tell recruiters about yourself..."}),
+            'phone': forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-600 focus:border-cyan-600"}),
+            'location': forms.TextInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-600 focus:border-cyan-600"}),
+            'linkedIn_profile': forms.URLInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-600 focus:border-cyan-600"}),
+            'portfolio_link': forms.URLInput(attrs={"class": "w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-600 focus:border-cyan-600"}),
+            'resume': forms.FileInput(attrs={"class": "w-full text-sm text-slate-500..."}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['first_name'].initial = user.first_name
+            self.fields['last_name'].initial = user.last_name
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        
+        # ✅ FIX: Check if the profile has a user before trying to update user details
+        if getattr(profile, 'user', None):
+            user = profile.user
+            # Only update names if they were actually provided in this form
+            if self.cleaned_data.get('first_name'):
+                user.first_name = self.cleaned_data['first_name']
+            if self.cleaned_data.get('last_name'):
+                user.last_name = self.cleaned_data['last_name']
+            
+            if commit:
+                user.save()
+        
+        if commit:
+            profile.save()
+        return profile

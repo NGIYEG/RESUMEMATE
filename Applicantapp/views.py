@@ -52,7 +52,37 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+# Applicantapp/views.py
 
+@login_required
+def profile_view(request):
+    """The main dashboard/profile page"""
+    try:
+        applicant = request.user.applicant_profile
+    except Applicant.DoesNotExist:
+        applicant = Applicant.objects.create(user=request.user)
+    return render(request, 'profile_dashboard.html', {'profile': applicant})
+
+@login_required
+def profile_edit(request):
+    """Handles profile editing"""
+    try:
+        applicant = request.user.applicant_profile
+    except Applicant.DoesNotExist:
+        applicant = Applicant.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        # Pass user object to the form
+        form = ApplicantProfileForm(request.POST, request.FILES, instance=applicant, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            # Redirect to the dashboard after edit
+            return redirect('profile_dashboard') 
+    else:
+        form = ApplicantProfileForm(instance=applicant, user=request.user)
+
+    return render(request, 'profile_edit.html', {'form': form})
 
 def job_feed(request):
     jobs = JobAdvertised.objects.all()
@@ -112,7 +142,7 @@ def apply_for_job(request):
             # Trigger Celery Task
             process_resume_task.delay(applicant.applicant_id)
 
-            messages.success(request, "Application received! Processing in background.")
+            # messages.success(request, "Application received! Processing in background.")
             return redirect("job_feed")
     else:
         form = ApplicantApplyForm(initial=initial_data)

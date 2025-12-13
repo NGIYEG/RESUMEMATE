@@ -9,5 +9,7 @@ urlpatterns = [
      path('insights/<int:applicant_id>/', views.view_resume_insights, name='resume_insights'),
      path('register/', views.register_view, name='register'),
      path('logout/', views.logout_view, name='logout'),
+     path('profile/', views.profile_view, name='profile_dashboard'),
+    path('profile/edit/', views.profile_edit, name='profile_edit'),
 
 ]

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import JobAdvertised, Post, Application, Department, AcademicCourse
+from .models import JobAdvertised, Post, Application, Department, AcademicCourse,Company
 
 # Register AcademicCourse with custom admin
 @admin.register(AcademicCourse)
@@ -37,3 +37,4 @@ class JobAdvertisedAdmin(admin.ModelAdmin):
 # Register remaining models
 admin.site.register(Application)
 admin.site.register(Department)
+admin.site.register(Company)

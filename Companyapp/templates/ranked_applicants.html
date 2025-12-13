@@ -1,10 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'company_base.html' %}
 
+{% block sidebar %}{% endblock %}
+
+{% block main_class %}flex-1 p-8 overflow-y-auto w-full{% endblock %}
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-10 px-4">
   <div class="max-w-6xl mx-auto">
     
-    <!-- Job Header -->
     <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border-l-4 border-cyan-500">
       <h1 class="text-3xl font-bold text-gray-800">{{ job.post.title }}</h1>
       <p class="text-gray-500">{{ job.department.name }} • Deadline: {{ job.deadline|date:"M d, Y" }}</p>
@@ -13,13 +15,31 @@
         <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
           Required Exp: {{ job.min_experience_years }}+ Years
         </span>
+        
         <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
-          Education: {{ job.required_education }}
+          {% with first_course=job.selected_courses.all.0 %}
+              {% if first_course %}
+                  {% if "bachelor" in job.required_education|lower or "degree" in job.required_education|lower %}
+                      BSc. {{ first_course.name }}
+                  {% elif "master" in job.required_education|lower %}
+                      MSc. {{ first_course.name }}
+                  {% elif "diploma" in job.required_education|lower %}
+                      Dip. {{ first_course.name }}
+                  {% else %}
+                      {{ job.required_education }} in {{ first_course.name }}
+                  {% endif %}
+                  
+                  {% if job.selected_courses.count > 1 %}
+                    <span class="text-xs opacity-70">(or related)</span>
+                  {% endif %}
+              {% else %}
+                  Education: {{ job.required_education }}
+              {% endif %}
+          {% endwith %}
         </span>
       </div>
     </div>
 
-    <!-- Applicants Table -->
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
         <h2 class="font-bold text-gray-700 text-lg">Ranked Applicants ({{ candidates|length }})</h2>
@@ -41,7 +61,6 @@
             {% for candidate in candidates %}
             <tr class="hover:bg-blue-50 transition duration-150">
               
-              <!-- Rank -->
               <td class="px-6 py-4">
                 <div class="flex items-center justify-center w-8 h-8 rounded-full 
                   {% if forloop.counter == 1 %}bg-yellow-100 text-yellow-700 font-bold border border-yellow-300
@@ -52,7 +71,6 @@
                 </div>
               </td>
 
-              <!-- Candidate Name - FIXED: No more user.get_full_name -->
               <td class="px-6 py-4">
                 <div>
                   <p class="font-bold text-gray-800">
@@ -67,7 +85,6 @@
                 </div>
               </td>
 
-              <!-- Match Score with Breakdown -->
               <td class="px-6 py-4 w-48">
                 <div class="flex items-center gap-3 mb-2">
                   <span class="text-xl font-bold 
@@ -81,12 +98,11 @@
                       {% if candidate.score >= 80 %}bg-green-500
                       {% elif candidate.score >= 50 %}bg-yellow-500
                       {% else %}bg-red-500{% endif %}" 
-                      style="width: {{ candidate.score }} %;" >
+                      style="width: {{ candidate.score }}%;">
                     </div>
                   </div>
                 </div>
                 
-                <!-- Score Breakdown -->
                 <div class="flex gap-2 text-xs">
                   <span class="text-blue-600" title="Skills Score">
                     S: {{ candidate.skills_score|default:0 }}%
@@ -100,9 +116,7 @@
                 </div>
               </td>
 
-              <!-- Key Insights -->
               <td class="px-6 py-4 text-sm text-gray-600 max-w-xs">
-                <!-- Matched Skills -->
                 {% if candidate.matched_skills %}
                 <div class="mb-2">
                   <span class="font-semibold text-xs text-green-600 uppercase">✓ Matched:</span>
@@ -119,7 +133,6 @@
                 </div>
                 {% endif %}
 
-                <!-- Missing Skills -->
                 {% if candidate.missing_skills %}
                 <div class="mb-2">
                   <span class="font-semibold text-xs text-red-600 uppercase">✗ Missing:</span>
@@ -136,7 +149,6 @@
                 </div>
                 {% endif %}
                 
-                <!-- Latest Role -->
                 <div>
                   <span class="font-semibold text-xs text-gray-400 uppercase">Latest Role:</span>
                   <p class="truncate text-xs">
@@ -144,7 +156,6 @@
                   </p>
                 </div>
 
-                <!-- Years of Experience -->
                 {% if candidate.candidate_years %}
                 <div class="mt-1">
                   <span class="text-xs text-gray-500">
@@ -155,7 +166,6 @@
                 {% endif %}
               </td>
 
-              <!-- Actions -->
               <td class="px-6 py-4">
                 <div class="flex flex-col gap-2">
                   <a href="{% url 'resume_insights' candidate.applicant.applicant_id %}" 
@@ -178,7 +188,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                   <p class="text-lg font-medium">No applicants have applied for this job yet.</p>
-                  <p class="text-sm text-gray-400 mt-2">Share the job posting to attract candidates!</p>
                 </div>
               </td>
             </tr>
@@ -187,8 +196,6 @@
         </table>
       </div>
     </div>
-
-   
   </div>
 </div>
 {% endblock %}

@@ -7,11 +7,10 @@ from django.contrib.auth.models import User
 
 class Applicant(models.Model):
     applicant_id = models.AutoField(primary_key=True)
-    
-   
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='applicant_profile', null=True, blank=True)
-    
-   
+
+    profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.png', blank=True)
+    bio = models.TextField(blank=True, help_text="Write a short professional bio about yourself.")
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)

@@ -1,11 +1,11 @@
-{% extends "base.html" %}
+{% extends 'company_base.html' %}
 
 {% load static %}
 {% block content %}
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">📊 Analytics Dashboard</h1>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Analytics Dashboard</h1>
             <p class="text-gray-600">Overview of all job postings and applications</p>
         </div>
 
@@ -123,30 +123,6 @@
             </div>
         </div>
 
-        <!-- Top Skills Section -->
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">🎯 Most Common Skills Across Applicants</h2>
-            <div class="flex flex-wrap gap-3">
-                {% for item in dashboard_data %}
-                    {% for skill in item.top_skills %}
-                    <span class="px-4 py-2 bg-linear-to-r from-cyan-500 to-blue-500 text-white rounded-full text-sm font-medium shadow-sm">
-                        {{ skill }}
-                    </span>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="mt-8 flex gap-4">
-            <a href="{% url 'job_advert' %}" 
-               class="px-6 py-3 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition font-medium">
-                + Create New Job
-            </a>
-            <a href="{% url 'apply_job' %}" 
-               class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium">
-                View Application Form
-            </a>
-        </div>
+      
     </div>
 {% endblock %}

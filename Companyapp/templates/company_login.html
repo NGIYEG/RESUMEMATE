@@ -1,24 +1,24 @@
 {% extends 'auth_base.html' %}
 
-
-
 {% block content %}
 <div  style="background-image: url('/static/Images/myimg.webp'); background-size: cover; background-position: center;" class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 bg-cover bg-center">
     <div class="max-w-md w-full space-y-8 bg-white/95 backdrop-blur-sm p-10 rounded-xl shadow-2xl">
+    
         <div class="text-center">
-            <h2 class="text-3xl font-extrabold text-gray-900">Welcome Back</h2>
+            <h2 class="text-3xl font-extrabold text-slate-900">Company Login</h2>
+            <p class="text-slate-500 mt-2">Manage your job postings and applicants</p>
         </div>
         
         <form method="POST" class="mt-8 space-y-6">
             {% csrf_token %}
             {{ form.as_p }}
             
-            <button type="submit" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg transition">
-                Sign In
+            <button type="submit" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg transition transform hover:scale-105 shadow-lg">
+                Login
             </button>
         </form>
         <div class="text-center mt-4">
-             <a href="{% url 'register' %}" class="text-sm text-cyan-600 hover:text-cyan-800 font-semibold">Don't have an account? Sign up</a>
+             <a href="{% url 'company_register' %}" class="text-sm text-cyan-600 font-bold hover:underline">Register New Company</a>
         </div>
     </div>
 </div>

@@ -3,6 +3,22 @@ from django.utils import timezone
 from Applicantapp.models import Applicant
 from django.core.exceptions import ValidationError
 
+from django.db import models
+from django.contrib.auth.models import User
+
+class Company(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='company_profile')
+    company_name = models.CharField(max_length=255, unique=True)
+    location = models.CharField(max_length=255)
+    logo = models.ImageField(upload_to='company_logos/', default='company_logos/default.png')
+    website = models.URLField(blank=True, null=True)
+    description = models.TextField(blank=True)
+    
+    def __str__(self):
+        return self.company_name
+    
+
+
 class Department(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
