@@ -2,9 +2,10 @@ from django.db import models
 from django.utils import timezone
 from Applicantapp.models import Applicant
 from django.core.exceptions import ValidationError
-
-from django.db import models
 from django.contrib.auth.models import User
+from cryptography.fernet import Fernet
+from django.conf import settings
+import base64
 
 class Company(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='company_profile')
@@ -14,6 +15,24 @@ class Company(models.Model):
     website = models.URLField(blank=True, null=True)
     description = models.TextField(blank=True)
     
+    smtp_host = models.CharField(max_length=255, blank=True, null=True, help_text="e.g., smtp.gmail.com")
+    smtp_port = models.IntegerField(default=587, help_text="Usually 587 for TLS")
+    smtp_username = models.CharField(max_length=255, blank=True, null=True)
+    smtp_password_encrypted = models.CharField(max_length=500, blank=True, null=True)
+    use_tls = models.BooleanField(default=True)
+
+    def set_smtp_password(self, raw_password):
+        """Encrypts and stores the password"""
+        f = Fernet(settings.ENCRYPTION_KEY) # We will add this key to settings.py next
+        self.smtp_password_encrypted = f.encrypt(raw_password.encode()).decode()
+
+    def get_smtp_password(self):
+        """Decrypts and returns the password"""
+        if not self.smtp_password_encrypted:
+            return None
+        f = Fernet(settings.ENCRYPTION_KEY)
+        return f.decrypt(self.smtp_password_encrypted.encode()).decode()
+
     def __str__(self):
         return self.company_name
     
@@ -152,3 +171,11 @@ class JobAdvertised(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+
+
+
+
+
+

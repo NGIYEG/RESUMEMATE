@@ -1,13 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import Group, User
+from django.core.mail import get_connection, EmailMultiAlternatives
+from django.core.mail.backends.smtp import EmailBackend
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from .forms import AcademicCourseForm, CompanyRegisterForm, DepartmentForm, JobAdvertisedForm, PostForm
 from .matcher import calculate_match_percentage
 from .models import AcademicCourse, Application, Company, Department, JobAdvertised, Post
-from Extractionapp.models import ResumeExtraction
+from Applicantapp.models import Applicant
+from Extractionapp.models import ResumeExtraction 
+
 
 def company_register_view(request):
     if request.method == 'POST':
@@ -301,3 +306,81 @@ def delete_job(request, job_id):
 
 
 
+
+
+@login_required
+def send_bulk_emails(request):
+    if request.method == 'POST':
+        # 1. Capture job_id FIRST (Safely at the top)
+        job_id = request.POST.get('job_id')
+
+        # 2. Capture other data
+        applicant_ids_str = request.POST.get('applicant_ids', '')
+        subject = request.POST.get('email_subject')
+        message = request.POST.get('email_message')
+
+        # Safety Check: If job_id is missing for some reason, go to dashboard
+        if not job_id:
+             messages.error(request, "Error: Job ID is missing.")
+             return redirect('analyzer:dashboard')
+
+        if not applicant_ids_str:
+            messages.error(request, "No applicants selected.")
+            return redirect('rankings', job_id=job_id)
+        
+        applicant_ids = applicant_ids_str.split(',')
+        applicants = Applicant.objects.filter(applicant_id__in=applicant_ids)
+        
+        # 3. Try Sending Emails
+        try:
+            # Check if user is a company
+            if not hasattr(request.user, 'company_profile'):
+                 messages.error(request, "Only company accounts can send emails.")
+                 return redirect('rankings', job_id=job_id)
+
+            company = request.user.company_profile
+            
+            # Check for SMTP settings
+            if not company.smtp_host or not company.smtp_username:
+                messages.error(request, "Please configure Email Settings in System Setup first.")
+                return redirect('rankings', job_id=job_id)
+                
+            # Decrypt Password
+            decrypted_password = company.get_smtp_password()
+            
+            # Create Custom Connection
+            backend = EmailBackend(
+                host=company.smtp_host,
+                port=company.smtp_port,
+                username=company.smtp_username,
+                password=decrypted_password,
+                use_tls=company.use_tls,
+                fail_silently=False
+            )
+            
+            connection = get_connection(backend=backend)
+            
+            # Prepare Emails
+            messages_to_send = []
+            for applicant in applicants:
+                email = EmailMultiAlternatives(
+                    subject=subject,
+                    body=f"Dear {applicant.first_name},\n\n{message}\n\nBest regards,\n{company.company_name}",
+                    from_email=company.smtp_username, 
+                    to=[applicant.email],
+                    connection=connection
+                )
+                messages_to_send.append(email)
+            
+            # Send Batch
+            connection.send_messages(messages_to_send)
+            messages.success(request, f"Sent {len(messages_to_send)} emails successfully via {company.smtp_host}!")
+
+        except Exception as e:
+            # Now 'job_id' is guaranteed to exist here
+            messages.error(request, f"Email Error: {str(e)}")
+
+        # Redirect back to the applicants list
+        return redirect('rankings', job_id=job_id)
+
+    return redirect('analyzer:dashboard')

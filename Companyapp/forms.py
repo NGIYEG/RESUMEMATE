@@ -2,6 +2,8 @@ from django import forms
 from .models import Post, Department, JobAdvertised, AcademicCourse
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from .models import Company
+
 
 class AcademicCourseForm(forms.ModelForm):
     """Form for creating new academic courses"""
@@ -223,8 +225,6 @@ class DepartmentForm(forms.ModelForm):
 
 
 
-from django.contrib.auth.models import User
-from .models import Company
 
 class CompanyRegisterForm(forms.ModelForm):
     # User Account Fields
@@ -253,3 +253,27 @@ class CompanyRegisterForm(forms.ModelForm):
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match")
         return cleaned_data
+    
+
+
+
+class SMTPSettingsForm(forms.ModelForm):
+    # Field for inputting the password (we won't display the encrypted one)
+    email_password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "..."}), required=False, label="SMTP Password")
+
+    class Meta:
+        model = Company
+        fields = ['smtp_host', 'smtp_port', 'smtp_username', 'use_tls']
+        widgets = {
+            'smtp_host': forms.TextInput(attrs={"class": "...", "placeholder": "smtp.gmail.com"}),
+            # ... styling widgets ...
+        }
+
+    def save(self, commit=True):
+        company = super().save(commit=False)
+        password = self.cleaned_data.get('email_password')
+        if password:
+            company.set_smtp_password(password) # Encrypt before saving
+        if commit:
+            company.save()
+        return company

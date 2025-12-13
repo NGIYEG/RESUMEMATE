@@ -289,3 +289,5 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute='*'), 
     },
 }
+
+ENCRYPTION_KEY =b'bZQhdII46MGaoUMfsfLY8B0sB9EC_VFkb2KGqgUKrJw='

@@ -82,20 +82,56 @@
 
     <main class="{% block main_class %}flex-1 ml-64 p-8 overflow-y-auto{% endblock %}">
         
-        {% if messages %}
-            <div class="mb-6 max-w-4xl">
-                {% for message in messages %}
-                <div class="p-4 rounded-lg text-white shadow-sm flex items-center gap-3 text-sm font-medium
-                    {% if message.tags == 'success' %}bg-green-600{% elif message.tags == 'error' %}bg-red-600{% else %}bg-blue-600{% endif %}">
-                    <i class="fa-solid fa-circle-info"></i> {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
         {% block content %}
         {% endblock %}
     </main>
+
+    {% if messages %}
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 w-full max-w-sm pointer-events-none">
+        {% for message in messages %}
+        <div class="toast-message pointer-events-auto transform transition-all duration-500 translate-x-full opacity-0 flex items-center w-full p-4 rounded-lg shadow-lg border-l-4 bg-white
+            {% if message.tags == 'success' %}border-green-500 text-green-700{% elif message.tags == 'error' %}border-red-500 text-red-700{% else %}border-blue-500 text-blue-700{% endif %}" role="alert">
+            
+            <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full 
+                {% if message.tags == 'success' %}bg-green-100 text-green-500{% elif message.tags == 'error' %}bg-red-100 text-red-500{% else %}bg-blue-100 text-blue-500{% endif %}">
+                {% if message.tags == 'success' %}
+                    <i class="fa-solid fa-check"></i>
+                {% elif message.tags == 'error' %}
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                {% else %}
+                    <i class="fa-solid fa-info"></i>
+                {% endif %}
+            </div>
+            
+            <div class="ml-3 text-sm font-semibold break-words">
+                {{ message }}
+            </div>
+
+            <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 transition" onclick="this.parentElement.remove()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast-message');
+            toasts.forEach((toast, index) => {
+                // Slide In
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                }, index * 200);
+
+                // Auto Dismiss (5 seconds)
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full', 'opacity-0');
+                    setTimeout(() => { toast.remove(); }, 500);
+                }, 5000 + (index * 1000));
+            });
+        });
+    </script>
+    {% endif %}
 
 </body>
 </html>

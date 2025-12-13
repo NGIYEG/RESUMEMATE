@@ -3,41 +3,49 @@
 {% block sidebar %}{% endblock %}
 
 {% block main_class %}flex-1 p-8 overflow-y-auto w-full{% endblock %}
+
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-10 px-4">
-  <div class="max-w-6xl mx-auto">
+  <div class="max-w-7xl mx-auto">
     
-    <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border-l-4 border-cyan-500">
-      <h1 class="text-3xl font-bold text-gray-800">{{ job.post.title }}</h1>
-      <p class="text-gray-500">{{ job.department.name }} • Deadline: {{ job.deadline|date:"M d, Y" }}</p>
-      
-      <div class="mt-4 flex gap-4 text-sm">
-        <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
-          Required Exp: {{ job.min_experience_years }}+ Years
-        </span>
-        
-        <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
-          {% with first_course=job.selected_courses.all.0 %}
-              {% if first_course %}
-                  {% if "bachelor" in job.required_education|lower or "degree" in job.required_education|lower %}
-                      BSc. {{ first_course.name }}
-                  {% elif "master" in job.required_education|lower %}
-                      MSc. {{ first_course.name }}
-                  {% elif "diploma" in job.required_education|lower %}
-                      Dip. {{ first_course.name }}
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border-l-4 border-cyan-500 flex flex-col md:flex-row justify-between items-start gap-4">
+      <div>
+          <h1 class="text-3xl font-bold text-gray-800">{{ job.post.title }}</h1>
+          <p class="text-gray-500">{{ job.department.name }} • Deadline: {{ job.deadline|date:"M d, Y" }}</p>
+          
+          <div class="mt-4 flex flex-wrap gap-4 text-sm">
+            <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
+              Required Exp: {{ job.min_experience_years }}+ Years
+            </span>
+            
+            <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
+              {% with first_course=job.selected_courses.all.0 %}
+                  {% if first_course %}
+                      {% if "bachelor" in job.required_education|lower or "degree" in job.required_education|lower %}
+                          BSc. {{ first_course.name }}
+                      {% elif "master" in job.required_education|lower %}
+                          MSc. {{ first_course.name }}
+                      {% elif "diploma" in job.required_education|lower %}
+                          Dip. {{ first_course.name }}
+                      {% else %}
+                          {{ job.required_education }} in {{ first_course.name }}
+                      {% endif %}
+                      
+                      {% if job.selected_courses.count > 1 %}
+                        <span class="text-xs opacity-70">(or related)</span>
+                      {% endif %}
                   {% else %}
-                      {{ job.required_education }} in {{ first_course.name }}
+                      Education: {{ job.required_education }}
                   {% endif %}
-                  
-                  {% if job.selected_courses.count > 1 %}
-                    <span class="text-xs opacity-70">(or related)</span>
-                  {% endif %}
-              {% else %}
-                  Education: {{ job.required_education }}
-              {% endif %}
-          {% endwith %}
-        </span>
+              {% endwith %}
+            </span>
+          </div>
       </div>
+
+      <button id="contactBtn" onclick="openEmailModal()" disabled 
+              class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold transition flex items-center gap-2 shadow-lg shrink-0 opacity-50 cursor-not-allowed">
+          <i class="fa-regular fa-paper-plane"></i> Contact Selected
+      </button>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -50,6 +58,9 @@
         <table class="w-full text-left">
           <thead>
             <tr class="text-gray-500 text-sm bg-gray-50 uppercase tracking-wider">
+              <th class="px-6 py-3 w-10">
+                  <input type="checkbox" id="selectAll" onclick="toggleAll(this)" class="rounded border-gray-300 text-cyan-600 focus:ring-cyan-500 w-4 h-4 cursor-pointer">
+              </th>
               <th class="px-6 py-3 font-medium">Rank</th>
               <th class="px-6 py-3 font-medium">Candidate</th>
               <th class="px-6 py-3 font-medium">Match Score</th>
@@ -61,6 +72,10 @@
             {% for candidate in candidates %}
             <tr class="hover:bg-blue-50 transition duration-150">
               
+              <td class="px-6 py-4">
+                  <input type="checkbox" name="applicant_check" value="{{ candidate.applicant.applicant_id }}" onclick="updateButtonState()" class="applicant-checkbox rounded border-gray-300 text-cyan-600 focus:ring-cyan-500 w-4 h-4 cursor-pointer">
+              </td>
+
               <td class="px-6 py-4">
                 <div class="flex items-center justify-center w-8 h-8 rounded-full 
                   {% if forloop.counter == 1 %}bg-yellow-100 text-yellow-700 font-bold border border-yellow-300
@@ -104,15 +119,9 @@
                 </div>
                 
                 <div class="flex gap-2 text-xs">
-                  <span class="text-blue-600" title="Skills Score">
-                    S: {{ candidate.skills_score|default:0 }}%
-                  </span>
-                  <span class="text-purple-600" title="Experience Score">
-                    E: {{ candidate.experience_score|default:0 }}%
-                  </span>
-                  <span class="text-green-600" title="Education Score">
-                    Ed: {{ candidate.education_score|default:0 }}%
-                  </span>
+                  <span class="text-blue-600" title="Skills Score">S: {{ candidate.skills_score|default:0 }}%</span>
+                  <span class="text-purple-600" title="Experience Score">E: {{ candidate.experience_score|default:0 }}%</span>
+                  <span class="text-green-600" title="Education Score">Ed: {{ candidate.education_score|default:0 }}%</span>
                 </div>
               </td>
 
@@ -122,9 +131,7 @@
                   <span class="font-semibold text-xs text-green-600 uppercase">✓ Matched:</span>
                   <div class="flex flex-wrap gap-1 mt-1">
                     {% for skill in candidate.matched_skills|slice:":3" %}
-                      <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs border border-green-200">
-                        {{ skill }}
-                      </span>
+                      <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs border border-green-200">{{ skill }}</span>
                     {% endfor %}
                     {% if candidate.matched_skills|length > 3 %}
                       <span class="text-xs text-gray-400">+{{ candidate.matched_skills|length|add:"-3" }}</span>
@@ -138,9 +145,7 @@
                   <span class="font-semibold text-xs text-red-600 uppercase">✗ Missing:</span>
                   <div class="flex flex-wrap gap-1 mt-1">
                     {% for skill in candidate.missing_skills|slice:":2" %}
-                      <span class="px-2 py-0.5 bg-red-100 text-red-800 rounded text-xs border border-red-200">
-                        {{ skill }}
-                      </span>
+                      <span class="px-2 py-0.5 bg-red-100 text-red-800 rounded text-xs border border-red-200">{{ skill }}</span>
                     {% endfor %}
                     {% if candidate.missing_skills|length > 2 %}
                       <span class="text-xs text-gray-400">+{{ candidate.missing_skills|length|add:"-2" }}</span>
@@ -151,19 +156,8 @@
                 
                 <div>
                   <span class="font-semibold text-xs text-gray-400 uppercase">Latest Role:</span>
-                  <p class="truncate text-xs">
-                    {{ candidate.resume_experience.0|default:"-- None --" }}
-                  </p>
+                  <p class="truncate text-xs">{{ candidate.resume_experience.0|default:"-- None --" }}</p>
                 </div>
-
-                {% if candidate.candidate_years %}
-                <div class="mt-1">
-                  <span class="text-xs text-gray-500">
-                    Exp: {{ candidate.candidate_years }} yrs
-                    {% if candidate.required_years %}(need {{ candidate.required_years }}){% endif %}
-                  </span>
-                </div>
-                {% endif %}
               </td>
 
               <td class="px-6 py-4">
@@ -172,23 +166,14 @@
                      class="text-cyan-600 hover:text-cyan-800 font-semibold text-sm hover:underline">
                     View Resume →
                   </a>
-                  <a href="mailto:{{ candidate.applicant.email }}" 
-                     class="text-blue-600 hover:text-blue-800 font-semibold text-sm hover:underline">
-                    Contact
-                  </a>
                 </div>
               </td>
 
             </tr>
             {% empty %}
             <tr>
-              <td colspan="5" class="text-center py-10 text-gray-500">
-                <div class="flex flex-col items-center">
-                  <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  <p class="text-lg font-medium">No applicants have applied for this job yet.</p>
-                </div>
+              <td colspan="6" class="text-center py-10 text-gray-500">
+                <p class="text-lg font-medium">No applicants found.</p>
               </td>
             </tr>
             {% endfor %}
@@ -198,4 +183,104 @@
     </div>
   </div>
 </div>
+
+<div id="emailModal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden transform transition-all scale-95 opacity-0" id="modalContent">
+        <div class="bg-slate-900 px-6 py-4 flex justify-between items-center">
+            <h3 class="text-white font-bold text-lg"><i class="fa-regular fa-envelope mr-2"></i> Send Bulk Email</h3>
+            <button onclick="closeEmailModal()" class="text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <form action="{% url 'send_bulk_emails' %}" method="POST" class="p-6 space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="job_id" value="{{ job.id }}">
+            <input type="hidden" name="applicant_ids" id="hiddenApplicantIds">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">To:</label>
+                <div class="text-sm text-slate-500 bg-slate-50 p-2 rounded border border-slate-200" id="recipientCountDisplay">
+                    Select applicants to see count.
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Subject</label>
+                <input type="text" name="email_subject" required class="w-full border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500" placeholder="e.g. Invitation to Interview">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Message</label>
+                <textarea name="email_message" rows="6" required class="w-full border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500" placeholder="Write your message here..."></textarea>
+                <p class="text-xs text-gray-400 mt-1">Note: Emails are sent individually. "Dear [Name]" is added automatically.</p>
+            </div>
+            <div class="flex justify-end gap-3 pt-2 border-t border-gray-100">
+                <button type="button" onclick="closeEmailModal()" class="px-4 py-2 text-slate-600 font-bold hover:bg-slate-50 rounded-lg transition">Cancel</button>
+                <button type="submit" class="px-6 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition shadow-md flex items-center gap-2">
+                    <i class="fa-regular fa-paper-plane"></i> Send Emails
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 1. Handle Select All
+    function toggleAll(source) {
+        const checkboxes = document.querySelectorAll('.applicant-checkbox');
+        checkboxes.forEach(cb => cb.checked = source.checked);
+        updateButtonState(); // Check state after toggling all
+    }
+
+    // 2. NEW: Update Button State based on selection
+    function updateButtonState() {
+        const checkboxes = document.querySelectorAll('.applicant-checkbox:checked');
+        const btn = document.getElementById('contactBtn');
+
+        if (checkboxes.length > 0) {
+            // Enable Button
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.classList.add('hover:bg-slate-900', 'cursor-pointer');
+        } else {
+            // Disable Button
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.classList.remove('hover:bg-slate-900', 'cursor-pointer');
+        }
+    }
+
+    // 3. Open Modal & Gather IDs
+    function openEmailModal() {
+        const checkboxes = document.querySelectorAll('.applicant-checkbox:checked');
+        const ids = Array.from(checkboxes).map(cb => cb.value);
+
+        if (ids.length === 0) {
+            // Should not happen if button disabled, but safe to keep
+            return;
+        }
+
+        document.getElementById('hiddenApplicantIds').value = ids.join(',');
+        document.getElementById('recipientCountDisplay').innerText = `${ids.length} Applicant${ids.length > 1 ? 's' : ''} Selected`;
+
+        const modal = document.getElementById('emailModal');
+        const content = document.getElementById('modalContent');
+        modal.classList.remove('hidden');
+        
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    // 4. Close Modal
+    function closeEmailModal() {
+        const modal = document.getElementById('emailModal');
+        const content = document.getElementById('modalContent');
+        
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+</script>
 {% endblock %}

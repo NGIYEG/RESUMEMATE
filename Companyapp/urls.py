@@ -13,4 +13,5 @@ urlpatterns = [
     path('delete-job/<int:job_id>/', views.delete_job, name='delete_job'), # Delete Logic
     path('company/register/', views.company_register_view, name='company_register'),
     path('company/logout/', views.company_logout_view, name='company_logout'),
+    path('applicants/bulk-email/', views.send_bulk_emails, name='send_bulk_emails'),
 ]
