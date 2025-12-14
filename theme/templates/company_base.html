@@ -12,68 +12,68 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="bg-slate-50 font-sans flex min-h-screen">
+<body style="background-image: url('/static/Images/myimg.webp'); background-size: cover; background-position: center;" class="bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 font-sans flex min-h-screen">
 
     {% block sidebar %}
-    <aside class="w-64 bg-slate-900 text-white flex flex-col fixed h-full shadow-xl z-50">
+    <aside class="w-64 bg-gradient-to-b from-amber-900 via-orange-900 to-rose-900 text-white flex flex-col fixed h-full shadow-2xl z-50">
         
-        <div class="h-20 flex items-center px-6 border-b border-slate-800 bg-slate-950">
+        <div class="h-20 flex items-center px-6 border-b border-white/20 bg-black/20 backdrop-blur-xl">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-cyan-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg">
+                <div class="w-10 h-10 bg-gradient-to-br from-amber-400 via-orange-400 to-rose-400 rounded-xl flex items-center justify-center font-extrabold text-amber-900 shadow-xl transform rotate-3">
                     R
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg tracking-wide">ResumeMate</h1>
-                    <p class="text-[10px] text-slate-400 uppercase tracking-wider">HR Platform</p>
+                    <h1 class="font-extrabold text-lg tracking-wide">ResumeMate</h1>
+                    <p class="text-[10px] text-amber-200 uppercase tracking-widest font-bold">HR Platform</p>
                 </div>
             </div>
         </div>
 
         <nav class="flex-1 overflow-y-auto py-6 space-y-2 px-4">
-            <p class="px-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Overview</p>
+            <p class="px-2 text-xs font-bold text-amber-300 uppercase tracking-wider mb-3">Overview</p>
             
-            <a href="{% url 'analyzer:dashboard' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-cyan-600 hover:text-white transition-all group">
-                <i class="fa-solid fa-chart-pie w-5 text-center group-hover:text-white"></i>
-                <span class="font-medium">Analytics Dashboard</span>
+            <a href="{% url 'analyzer:dashboard' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
+                <i class="fa-solid fa-chart-pie w-5 text-center group-hover:text-amber-300"></i>
+                <span class="font-bold">Analytics Dashboard</span>
             </a>
 
-            <div class="my-4 border-t border-slate-800"></div>
-            <p class="px-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Recruitment</p>
+            <div class="my-4 border-t border-white/20"></div>
+            <p class="px-2 text-xs font-bold text-amber-300 uppercase tracking-wider mb-3">Recruitment</p>
 
-            <a href="{% url 'manage_jobs' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-cyan-600 hover:text-white transition-all group">
-                <i class="fa-solid fa-list-check w-5 text-center"></i>
-                <span class="font-medium">Manage Jobs</span>
+            <a href="{% url 'manage_jobs' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
+                <i class="fa-solid fa-list-check w-5 text-center group-hover:text-amber-300"></i>
+                <span class="font-bold">Manage Jobs</span>
             </a>
 
-            <a href="{% url 'job_advert' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-cyan-600 hover:text-white transition-all group">
-                <i class="fa-solid fa-bullhorn w-5 text-center"></i>
-                <span class="font-medium">Advertise Job</span>
+            <a href="{% url 'job_advert' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
+                <i class="fa-solid fa-bullhorn w-5 text-center group-hover:text-amber-300"></i>
+                <span class="font-bold">Advertise Job</span>
             </a>
             
-            <a href="{% url 'add' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-cyan-600 hover:text-white transition-all group">
-                <i class="fa-solid fa-gears w-5 text-center"></i>
-                <span class="font-medium">System Setup</span>
+            <a href="{% url 'add' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
+                <i class="fa-solid fa-gears w-5 text-center group-hover:text-amber-300"></i>
+                <span class="font-bold">System Setup</span>
             </a>
         </nav>
 
-        <div class="p-4 border-t border-slate-800 bg-slate-950">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-full border border-slate-600 overflow-hidden bg-white p-0.5">
+        <div class="p-4 border-t border-white/20 bg-black/20 backdrop-blur-xl">
+            <div class="flex items-center gap-3 mb-4 p-3 bg-white/10 rounded-xl border border-white/20">
+                <div class="w-11 h-11 rounded-xl border-2 border-amber-300/50 overflow-hidden bg-white p-0.5 shadow-lg">
                     {% if user.company_profile.logo %}
-                        <img src="{{ user.company_profile.logo.url }}" class="w-full h-full object-contain rounded-full">
+                        <img src="{{ user.company_profile.logo.url }}" class="w-full h-full object-contain rounded-lg">
                     {% else %}
-                        <div class="w-full h-full flex items-center justify-center bg-slate-200 text-slate-600 font-bold">
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-orange-100 text-amber-900 font-extrabold text-xl rounded-lg">
                             {{ user.company_profile.company_name|slice:":1" }}
                         </div>
                     {% endif %}
                 </div>
                 <div class="overflow-hidden">
                     <p class="text-sm font-bold text-white truncate">{{ user.company_profile.company_name }}</p>
-                    <p class="text-xs text-slate-400">Logged in</p>
+                    <p class="text-xs text-amber-200">Logged in</p>
                 </div>
             </div>
             
-            <a href="{% url 'company_logout' %}" class="flex items-center justify-center gap-2 w-full py-2 bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white rounded-md transition-colors text-sm font-bold">
+            <a href="{% url 'company_logout' %}" class="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white rounded-xl transition-colors text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95">
                 <i class="fa-solid fa-right-from-bracket"></i> Sign Out
             </a>
         </div>
@@ -89,25 +89,37 @@
     {% if messages %}
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 w-full max-w-sm pointer-events-none">
         {% for message in messages %}
-        <div class="toast-message pointer-events-auto transform transition-all duration-500 translate-x-full opacity-0 flex items-center w-full p-4 rounded-lg shadow-lg border-l-4 bg-white
-            {% if message.tags == 'success' %}border-green-500 text-green-700{% elif message.tags == 'error' %}border-red-500 text-red-700{% else %}border-blue-500 text-blue-700{% endif %}" role="alert">
+        <div class="toast-message pointer-events-auto transform transition-all duration-500 translate-x-full opacity-0 flex items-center w-full p-4 rounded-2xl shadow-2xl border backdrop-blur-xl
+            {% if message.tags == 'success' %}
+                border-emerald-400/50 bg-emerald-50/90 text-emerald-800
+            {% elif message.tags == 'error' %}
+                border-rose-400/50 bg-rose-50/90 text-rose-800
+            {% else %}
+                border-amber-400/50 bg-amber-50/90 text-amber-800
+            {% endif %}" role="alert">
             
-            <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full 
-                {% if message.tags == 'success' %}bg-green-100 text-green-500{% elif message.tags == 'error' %}bg-red-100 text-red-500{% else %}bg-blue-100 text-blue-500{% endif %}">
+            <div class="inline-flex items-center justify-center flex-shrink-0 w-9 h-9 rounded-xl shadow-lg
                 {% if message.tags == 'success' %}
-                    <i class="fa-solid fa-check"></i>
+                    bg-gradient-to-br from-emerald-400 to-teal-500 text-white
                 {% elif message.tags == 'error' %}
-                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    bg-gradient-to-br from-rose-500 to-pink-600 text-white
                 {% else %}
-                    <i class="fa-solid fa-info"></i>
+                    bg-gradient-to-br from-amber-400 to-orange-500 text-white
+                {% endif %}">
+                {% if message.tags == 'success' %}
+                    <i class="fa-solid fa-check text-lg"></i>
+                {% elif message.tags == 'error' %}
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                {% else %}
+                    <i class="fa-solid fa-info text-lg"></i>
                 {% endif %}
             </div>
             
-            <div class="ml-3 text-sm font-semibold break-words">
+            <div class="ml-3 text-sm font-bold break-words">
                 {{ message }}
             </div>
 
-            <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 transition" onclick="this.parentElement.remove()">
+            <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-xl focus:ring-2 focus:ring-amber-300 p-1.5 hover:bg-white/40 inline-flex items-center justify-center h-8 w-8 transition backdrop-blur-sm" onclick="this.parentElement.remove()">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
@@ -118,12 +130,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             const toasts = document.querySelectorAll('.toast-message');
             toasts.forEach((toast, index) => {
-                // Slide In
                 setTimeout(() => {
                     toast.classList.remove('translate-x-full', 'opacity-0');
                 }, index * 200);
 
-                // Auto Dismiss (5 seconds)
                 setTimeout(() => {
                     toast.classList.add('translate-x-full', 'opacity-0');
                     setTimeout(() => { toast.remove(); }, 500);

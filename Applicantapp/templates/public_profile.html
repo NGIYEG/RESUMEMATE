@@ -1,17 +1,164 @@
-{% extends 'profile_dashboard.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block navbar %}
-{% endblock %}
-
-{% block footer %}
-{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block content %}
+<div class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 py-8 relative">
+    
     <div class="fixed top-6 left-6 z-50">
-        <a href="javascript:history.back()" class="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur text-slate-700 font-bold rounded-full shadow-sm hover:shadow-md border border-slate-200 transition">
+        <a href="javascript:history.back()" class="flex items-center gap-2 px-5 py-3 bg-white/40 backdrop-blur-xl text-amber-900 font-bold rounded-2xl shadow-xl hover:shadow-2xl border border-white/60 transition hover:scale-105">
             <i class="fa-solid fa-arrow-left"></i> Back
         </a>
     </div>
 
-    {{ block.super }}
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        
+        <div class="bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/60 overflow-hidden mb-6 relative group">
+            
+            <div class="h-56 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 relative overflow-hidden">
+                <div class="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+            
+            <div class="px-8 pb-8">
+                <div class="flex flex-col md:flex-row items-start md:items-end -mt-24 mb-4">
+                    
+                    <div class="relative h-48 w-48 rounded-full border-[6px] border-white bg-white overflow-hidden shadow-2xl shrink-0">
+                        {% if profile.first_name %}
+                            {% with s_name=profile.first_name s_last=profile.last_name %}
+                                {% if profile.profile_picture %}
+                                    <img src="{{ profile.profile_picture.url }}" class="w-full h-full object-cover rounded-2xl"
+                                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ s_name }}+{{ s_last }}&background=f59e0b&color=fff&size=192&bold=true';">
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ s_name }}+{{ s_last }}&background=f59e0b&color=fff&size=192&bold=true" class="w-full h-full object-cover rounded-2xl">
+                                {% endif %}
+                            {% endwith %}
+                        {% elif profile.user %}
+                            {% with s_name=profile.user.first_name s_last=profile.user.last_name %}
+                                {% if profile.profile_picture %}
+                                    <img src="{{ profile.profile_picture.url }}" class="w-full h-full object-cover rounded-2xl"
+                                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ s_name }}+{{ s_last }}&background=f59e0b&color=fff&size=192&bold=true';">
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ s_name }}+{{ s_last }}&background=f59e0b&color=fff&size=192&bold=true" class="w-full h-full object-cover rounded-2xl">
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            <img src="https://ui-avatars.com/api/?name=Candidate&background=f59e0b&color=fff&size=192&bold=true" class="w-full h-full object-cover rounded-2xl">
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-6 md:mt-0 md:ml-6 flex-1 w-full">
+                        <h1 class="text-4xl font-extrabold bg-gradient-to-r from-amber-900 via-orange-900 to-rose-900 bg-clip-text text-transparent">
+                            {% if profile.first_name %}
+                                {{ profile.first_name }} {{ profile.last_name }}
+                            {% elif profile.user %}
+                                {{ profile.user.first_name }} {{ profile.user.last_name }}
+                            {% else %}
+                                Candidate (No Name)
+                            {% endif %}
+                        </h1>
+                        
+                        <div class="flex flex-col sm:flex-row gap-y-2 gap-x-6 text-amber-800 mt-3">
+                            {% if profile.location %}
+                                <span class="flex items-center gap-2 text-sm font-bold">
+                                    <i class="fa-solid fa-location-dot text-orange-600 text-lg"></i> {{ profile.location }}
+                                </span>
+                            {% endif %}
+                            
+                            <span class="flex items-center gap-2 text-sm font-bold">
+                                <i class="fa-solid fa-envelope text-orange-600 text-lg"></i> 
+                                {% if profile.email %}
+                                    {{ profile.email }}
+                                {% elif profile.user %}
+                                    {{ profile.user.email }}
+                                {% else %}
+                                    No Email
+                                {% endif %}
+                            </span>
+
+                            {% if profile.phone %}
+                            <span class="flex items-center gap-2 text-sm font-bold">
+                                <i class="fa-solid fa-phone text-orange-600 text-lg"></i> {{ profile.phone }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white/40 backdrop-blur-xl rounded-2xl shadow-xl border border-white/60 p-8">
+                    <h2 class="text-2xl font-bold text-amber-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-info-circle text-orange-600"></i>
+                        About
+                    </h2>
+                    {% if profile.bio %}
+                        <p class="text-amber-900 whitespace-pre-line leading-relaxed text-base">{{ profile.bio }}</p>
+                    {% else %}
+                        <p class="text-amber-600 italic">No bio provided.</p>
+                    {% endif %}
+                </div>
+                
+                {% if profile.extracted_data %}
+                <div class="bg-white/40 backdrop-blur-xl rounded-2xl shadow-xl border border-white/60 p-8">
+                    <h2 class="text-2xl font-bold text-amber-900 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-orange-600"></i>
+                        Resume Highlights
+                    </h2>
+                    
+                    <div class="mb-8">
+                        <h3 class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-4">Detected Skills</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for skill in profile.extracted_data.skills %}
+                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-2 border-amber-200 shadow-md">
+                                {{ skill|title }}
+                            </span>
+                            {% empty %}
+                            <span class="text-amber-700 text-sm italic">No skills automatically detected.</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if profile.extracted_data.work_experience %}
+                    <div>
+                        <h3 class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-4">Work History</h3>
+                        <div class="space-y-4 border-l-4 border-orange-300 ml-1 pl-6">
+                            {% for job in profile.extracted_data.work_experience %}
+                            <div class="relative">
+                                <span class="absolute -left-[29px] top-1.5 h-4 w-4 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 border-4 border-white ring-2 ring-orange-200 shadow-lg"></span>
+                                <p class="text-amber-900 text-sm font-medium leading-relaxed">{{ job }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-white/40 backdrop-blur-xl rounded-2xl shadow-xl border border-white/60 p-6">
+                    <h2 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">
+                        <i class="fa-regular fa-file-pdf text-rose-600 text-2xl"></i>
+                        Resume
+                    </h2>
+                    {% if profile.resume %}
+                        <a href="{{ profile.resume.url }}" target="_blank" class="block w-full py-3 px-4 bg-gradient-to-r from-amber-700 to-orange-700 hover:from-amber-800 hover:to-orange-800 text-white text-center font-bold rounded-xl transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                            View Resume
+                        </a>
+                    {% else %}
+                        <div class="bg-amber-100 border border-amber-300 text-amber-900 px-4 py-3 rounded-xl text-sm mb-3 font-medium">
+                            No resume available.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

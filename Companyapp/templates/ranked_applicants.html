@@ -5,20 +5,22 @@
 {% block main_class %}flex-1 p-8 overflow-y-auto w-full{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 py-10 px-4">
+<div class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 py-10 px-4">
   <div class="max-w-7xl mx-auto">
     
-    <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border-l-4 border-cyan-500 flex flex-col md:flex-row justify-between items-start gap-4">
+    <div class="bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 mb-8 border-l-8 border-orange-500 border border-white/60 flex flex-col md:flex-row justify-between items-start gap-4">
       <div>
-          <h1 class="text-3xl font-bold text-gray-800">{{ job.post.title }}</h1>
-          <p class="text-gray-500">{{ job.department.name }} • Deadline: {{ job.deadline|date:"M d, Y" }}</p>
+          <h1 class="text-4xl font-extrabold bg-gradient-to-r from-amber-900 via-orange-800 to-rose-800 bg-clip-text text-transparent">
+            {{ job.post.title }}
+          </h1>
+          <p class="text-amber-800 font-medium mt-1">{{ job.department.name }} • Deadline: {{ job.deadline|date:"M d, Y" }}</p>
           
-          <div class="mt-4 flex flex-wrap gap-4 text-sm">
-            <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
+          <div class="mt-4 flex flex-wrap gap-3 text-sm">
+            <span class="bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 px-4 py-2 rounded-full border-2 border-amber-300 font-bold shadow-md">
               Required Exp: {{ job.min_experience_years }}+ Years
             </span>
             
-            <span class="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full border border-cyan-200">
+            <span class="bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 px-4 py-2 rounded-full border-2 border-amber-300 font-bold shadow-md">
               {% with first_course=job.selected_courses.all.0 %}
                   {% if first_course %}
                       {% if "bachelor" in job.required_education|lower or "degree" in job.required_education|lower %}
@@ -43,58 +45,58 @@
       </div>
 
       <button id="contactBtn" onclick="openEmailModal()" disabled 
-              class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold transition flex items-center gap-2 shadow-lg shrink-0 opacity-50 cursor-not-allowed">
+              class="bg-gradient-to-r from-amber-800 to-orange-800 text-white px-6 py-3 rounded-2xl font-bold transition flex items-center gap-2 shadow-xl shrink-0 opacity-50 cursor-not-allowed hover:from-amber-900 hover:to-orange-900">
           <i class="fa-regular fa-paper-plane"></i> Contact Selected
       </button>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-        <h2 class="font-bold text-gray-700 text-lg">Ranked Applicants ({{ candidates|length }})</h2>
-        <span class="text-xs text-gray-400">Sorted by AI Match Score</span>
+    <div class="bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden border border-white/60">
+      <div class="px-6 py-5 border-b border-amber-200/50 flex justify-between items-center bg-gradient-to-r from-amber-50/50 to-orange-50/50">
+        <h2 class="font-bold text-amber-900 text-2xl">Ranked Applicants ({{ candidates|length }})</h2>
+        <span class="text-xs text-amber-700 font-medium bg-amber-100 px-3 py-1 rounded-full">Sorted by AI Match Score</span>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-left">
           <thead>
-            <tr class="text-gray-500 text-sm bg-gray-50 uppercase tracking-wider">
-              <th class="px-6 py-3 w-10">
-                  <input type="checkbox" id="selectAll" onclick="toggleAll(this)" class="rounded border-gray-300 text-cyan-600 focus:ring-cyan-500 w-4 h-4 cursor-pointer">
+            <tr class="text-amber-800 text-sm bg-gradient-to-r from-amber-100/50 to-orange-100/50 uppercase tracking-wider">
+              <th class="px-6 py-4 w-10">
+                  <input type="checkbox" id="selectAll" onclick="toggleAll(this)" class="rounded border-amber-300 text-orange-600 focus:ring-orange-500 w-5 h-5 cursor-pointer">
               </th>
-              <th class="px-6 py-3 font-medium">Rank</th>
-              <th class="px-6 py-3 font-medium">Candidate</th>
-              <th class="px-6 py-3 font-medium">Match Score</th>
-              <th class="px-6 py-3 font-medium">Key Insights</th>
-              <th class="px-6 py-3 font-medium">Action</th>
+              <th class="px-6 py-4 font-bold">Rank</th>
+              <th class="px-6 py-4 font-bold">Candidate</th>
+              <th class="px-6 py-4 font-bold">Match Score</th>
+              <th class="px-6 py-4 font-bold">Key Insights</th>
+              <th class="px-6 py-4 font-bold">Action</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100">
+          <tbody class="divide-y divide-amber-200/50">
             {% for candidate in candidates %}
-            <tr class="hover:bg-blue-50 transition duration-150">
+            <tr class="hover:bg-amber-50/50 transition duration-150">
               
               <td class="px-6 py-4">
-                  <input type="checkbox" name="applicant_check" value="{{ candidate.applicant.applicant_id }}" onclick="updateButtonState()" class="applicant-checkbox rounded border-gray-300 text-cyan-600 focus:ring-cyan-500 w-4 h-4 cursor-pointer">
+                  <input type="checkbox" name="applicant_check" value="{{ candidate.applicant.applicant_id }}" onclick="updateButtonState()" class="applicant-checkbox rounded border-amber-300 text-orange-600 focus:ring-orange-500 w-5 h-5 cursor-pointer">
               </td>
 
               <td class="px-6 py-4">
-                <div class="flex items-center justify-center w-8 h-8 rounded-full 
-                  {% if forloop.counter == 1 %}bg-yellow-100 text-yellow-700 font-bold border border-yellow-300
-                  {% elif forloop.counter == 2 %}bg-gray-200 text-gray-700 font-bold border border-gray-300
-                  {% elif forloop.counter == 3 %}bg-orange-100 text-orange-800 font-bold border border-orange-300
-                  {% else %}text-gray-400 font-semibold{% endif %}">
+                <div class="flex items-center justify-center w-10 h-10 rounded-xl font-extrabold shadow-lg
+                  {% if forloop.counter == 1 %}bg-gradient-to-br from-yellow-400 to-amber-500 text-white border-2 border-yellow-300
+                  {% elif forloop.counter == 2 %}bg-gradient-to-br from-gray-300 to-slate-400 text-white border-2 border-gray-200
+                  {% elif forloop.counter == 3 %}bg-gradient-to-br from-orange-400 to-amber-600 text-white border-2 border-orange-300
+                  {% else %}text-amber-700 bg-amber-100 border-2 border-amber-200{% endif %}">
                   {{ forloop.counter }}
                 </div>
               </td>
 
               <td class="px-6 py-4">
                 <div>
-                  <p class="font-bold text-gray-800">
+                  <p class="font-bold text-amber-900 text-lg">
                     {{ candidate.applicant.first_name }} {{ candidate.applicant.last_name }}
                   </p>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-xs text-amber-700 font-medium">
                     {{ candidate.applicant.email }}
                   </p>
-                  <p class="text-xs text-gray-400">
+                  <p class="text-xs text-amber-600">
                     Applied: {{ candidate.application_date|date:"M d, Y" }}
                   </p>
                 </div>
@@ -102,39 +104,39 @@
 
               <td class="px-6 py-4 w-48">
                 <div class="flex items-center gap-3 mb-2">
-                  <span class="text-xl font-bold 
-                    {% if candidate.score >= 80 %}text-green-600
-                    {% elif candidate.score >= 50 %}text-yellow-600
-                    {% else %}text-red-500{% endif %}">
+                  <span class="text-2xl font-extrabold 
+                    {% if candidate.score >= 80 %}text-emerald-700
+                    {% elif candidate.score >= 50 %}text-amber-700
+                    {% else %}text-rose-700{% endif %}">
                     {{ candidate.score }}%
                   </span>
-                  <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div class="h-2.5 rounded-full 
-                      {% if candidate.score >= 80 %}bg-green-500
-                      {% elif candidate.score >= 50 %}bg-yellow-500
-                      {% else %}bg-red-500{% endif %}" 
+                  <div class="w-full bg-amber-200 rounded-full h-3 shadow-inner">
+                    <div class="h-3 rounded-full shadow-lg
+                      {% if candidate.score >= 80 %}bg-gradient-to-r from-emerald-500 to-teal-500
+                      {% elif candidate.score >= 50 %}bg-gradient-to-r from-amber-500 to-orange-500
+                      {% else %}bg-gradient-to-r from-rose-500 to-pink-500{% endif %}" 
                       style="width: {{ candidate.score }}%;">
                     </div>
                   </div>
                 </div>
                 
-                <div class="flex gap-2 text-xs">
-                  <span class="text-blue-600" title="Skills Score">S: {{ candidate.skills_score|default:0 }}%</span>
-                  <span class="text-purple-600" title="Experience Score">E: {{ candidate.experience_score|default:0 }}%</span>
-                  <span class="text-green-600" title="Education Score">Ed: {{ candidate.education_score|default:0 }}%</span>
+                <div class="flex gap-2 text-xs font-bold">
+                  <span class="text-purple-700 bg-purple-100 px-2 py-1 rounded-lg" title="Skills Score">S: {{ candidate.skills_score|default:0 }}%</span>
+                  <span class="text-indigo-700 bg-indigo-100 px-2 py-1 rounded-lg" title="Experience Score">E: {{ candidate.experience_score|default:0 }}%</span>
+                  <span class="text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg" title="Education Score">Ed: {{ candidate.education_score|default:0 }}%</span>
                 </div>
               </td>
 
-              <td class="px-6 py-4 text-sm text-gray-600 max-w-xs">
+              <td class="px-6 py-4 text-sm text-amber-900 max-w-xs">
                 {% if candidate.matched_skills %}
                 <div class="mb-2">
-                  <span class="font-semibold text-xs text-green-600 uppercase">✓ Matched:</span>
+                  <span class="font-bold text-xs text-emerald-800 uppercase">✓ Matched:</span>
                   <div class="flex flex-wrap gap-1 mt-1">
                     {% for skill in candidate.matched_skills|slice:":3" %}
-                      <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs border border-green-200">{{ skill }}</span>
+                      <span class="px-2 py-1 bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-800 rounded-lg text-xs border border-emerald-300 font-medium">{{ skill }}</span>
                     {% endfor %}
                     {% if candidate.matched_skills|length > 3 %}
-                      <span class="text-xs text-gray-400">+{{ candidate.matched_skills|length|add:"-3" }}</span>
+                      <span class="text-xs text-amber-600 font-bold">+{{ candidate.matched_skills|length|add:"-3" }}</span>
                     {% endif %}
                   </div>
                 </div>
@@ -142,36 +144,43 @@
 
                 {% if candidate.missing_skills %}
                 <div class="mb-2">
-                  <span class="font-semibold text-xs text-red-600 uppercase">✗ Missing:</span>
+                  <span class="font-bold text-xs text-rose-800 uppercase">✗ Missing:</span>
                   <div class="flex flex-wrap gap-1 mt-1">
                     {% for skill in candidate.missing_skills|slice:":2" %}
-                      <span class="px-2 py-0.5 bg-red-100 text-red-800 rounded text-xs border border-red-200">{{ skill }}</span>
+                      <span class="px-2 py-1 bg-gradient-to-r from-rose-100 to-pink-100 text-rose-800 rounded-lg text-xs border border-rose-300 font-medium">{{ skill }}</span>
                     {% endfor %}
                     {% if candidate.missing_skills|length > 2 %}
-                      <span class="text-xs text-gray-400">+{{ candidate.missing_skills|length|add:"-2" }}</span>
+                      <span class="text-xs text-amber-600 font-bold">+{{ candidate.missing_skills|length|add:"-2" }}</span>
                     {% endif %}
                   </div>
                 </div>
                 {% endif %}
                 
                 <div>
-                  <span class="font-semibold text-xs text-gray-400 uppercase">Latest Role:</span>
-                  <p class="truncate text-xs">{{ candidate.resume_experience.0|default:"-- None --" }}</p>
+                  <span class="font-bold text-xs text-amber-700 uppercase">Latest Role:</span>
+                  <p class="truncate text-xs text-amber-900">{{ candidate.resume_experience.0|default:"-- None --" }}</p>
                 </div>
               </td>
 
               <td class="px-6 py-4">
                 <div class="flex flex-col gap-2">
                   <a href="{% url 'career:public_profile' candidate.applicant.pk %}" 
-                 class="text-cyan-600 hover:text-cyan-800 font-semibold text-sm hover:underline">Review →</a>
+                 class="text-orange-700 hover:text-orange-900 font-bold text-sm hover:underline flex items-center gap-1">
+                    Review <i class="fa-solid fa-arrow-right"></i>
+                  </a>
                 </div>
               </td>
 
             </tr>
             {% empty %}
             <tr>
-              <td colspan="6" class="text-center py-10 text-gray-500">
-                <p class="text-lg font-medium">No applicants found.</p>
+              <td colspan="6" class="text-center py-16">
+                <div class="flex flex-col items-center">
+                  <div class="w-20 h-20 bg-gradient-to-br from-amber-200 to-orange-200 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-users text-4xl text-amber-700"></i>
+                  </div>
+                  <p class="text-lg font-bold text-amber-900">No applicants found.</p>
+                </div>
               </td>
             </tr>
             {% endfor %}
@@ -182,12 +191,13 @@
   </div>
 </div>
 
-<div id="emailModal" class="fixed inset-0 bg-black/50 z-100 hidden flex items-center justify-center backdrop-blur-sm">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden transform transition-all scale-95 opacity-0" id="modalContent">
-        <div class="bg-slate-900 px-6 py-4 flex justify-between items-center">
-            <h3 class="text-white font-bold text-lg"><i class="fa-regular fa-envelope mr-2"></i> Send Bulk Email</h3>
-            <button onclick="closeEmailModal()" class="text-slate-400 hover:text-white transition">
-                <i class="fa-solid fa-xmark text-xl"></i>
+<!-- Email Modal -->
+<div id="emailModal" class="fixed inset-0 bg-black/60 z-100 hidden flex items-center justify-center backdrop-blur-md">
+    <div class="bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden transform transition-all scale-95 opacity-0 border border-white/60" id="modalContent">
+        <div class="bg-gradient-to-r from-amber-700 to-orange-700 px-6 py-4 flex justify-between items-center">
+            <h3 class="text-white font-bold text-xl"><i class="fa-regular fa-envelope mr-2"></i> Send Bulk Email</h3>
+            <button onclick="closeEmailModal()" class="text-white/80 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-2xl"></i>
             </button>
         </div>
         <form action="{% url 'send_bulk_emails' %}" method="POST" class="p-6 space-y-4">
@@ -195,23 +205,23 @@
             <input type="hidden" name="job_id" value="{{ job.id }}">
             <input type="hidden" name="applicant_ids" id="hiddenApplicantIds">
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">To:</label>
-                <div class="text-sm text-slate-500 bg-slate-50 p-2 rounded border border-slate-200" id="recipientCountDisplay">
+                <label class="block text-sm font-bold text-amber-900 mb-1">To:</label>
+                <div class="text-sm text-amber-800 bg-amber-50 p-3 rounded-xl border border-amber-200 font-medium" id="recipientCountDisplay">
                     Select applicants to see count.
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Subject</label>
-                <input type="text" name="email_subject" required class="w-full border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500" placeholder="e.g. Invitation to Interview">
+                <label class="block text-sm font-bold text-amber-900 mb-1">Subject</label>
+                <input type="text" name="email_subject" required class="w-full px-4 py-3 rounded-xl border-2 border-amber-200 bg-white/70 backdrop-blur-sm text-amber-900 font-medium focus:ring-2 focus:ring-orange-400 focus:border-orange-400" placeholder="e.g. Invitation to Interview">
             </div>
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1">Message</label>
-                <textarea name="email_message" rows="6" required class="w-full border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500" placeholder="Write your message here..."></textarea>
-                <p class="text-xs text-gray-400 mt-1">Note: Emails are sent individually. "Dear [Name]" is added automatically.</p>
+                <label class="block text-sm font-bold text-amber-900 mb-1">Message</label>
+                <textarea name="email_message" rows="6" required class="w-full px-4 py-3 rounded-xl border-2 border-amber-200 bg-white/70 backdrop-blur-sm text-amber-900 font-medium focus:ring-2 focus:ring-orange-400 focus:border-orange-400" placeholder="Write your message here..."></textarea>
+                <p class="text-xs text-amber-700 mt-1 font-medium">Note: Emails are sent individually. "Dear [Name]" is added automatically.</p>
             </div>
-            <div class="flex justify-end gap-3 pt-2 border-t border-gray-100">
-                <button type="button" onclick="closeEmailModal()" class="px-4 py-2 text-slate-600 font-bold hover:bg-slate-50 rounded-lg transition">Cancel</button>
-                <button type="submit" class="px-6 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition shadow-md flex items-center gap-2">
+            <div class="flex justify-end gap-3 pt-2 border-t border-amber-200">
+                <button type="button" onclick="closeEmailModal()" class="px-6 py-3 text-amber-900 font-bold hover:bg-amber-100 rounded-xl transition">Cancel</button>
+                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold rounded-xl hover:from-amber-700 hover:to-orange-700 transition shadow-lg flex items-center gap-2">
                     <i class="fa-regular fa-paper-plane"></i> Send Emails
                 </button>
             </div>
@@ -220,40 +230,32 @@
 </div>
 
 <script>
-    // 1. Handle Select All
     function toggleAll(source) {
         const checkboxes = document.querySelectorAll('.applicant-checkbox');
         checkboxes.forEach(cb => cb.checked = source.checked);
-        updateButtonState(); // Check state after toggling all
+        updateButtonState();
     }
 
-    // 2. NEW: Update Button State based on selection
     function updateButtonState() {
         const checkboxes = document.querySelectorAll('.applicant-checkbox:checked');
         const btn = document.getElementById('contactBtn');
 
         if (checkboxes.length > 0) {
-            // Enable Button
             btn.disabled = false;
             btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            btn.classList.add('hover:bg-slate-900', 'cursor-pointer');
+            btn.classList.add('cursor-pointer');
         } else {
-            // Disable Button
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
-            btn.classList.remove('hover:bg-slate-900', 'cursor-pointer');
+            btn.classList.remove('cursor-pointer');
         }
     }
 
-    // 3. Open Modal & Gather IDs
     function openEmailModal() {
         const checkboxes = document.querySelectorAll('.applicant-checkbox:checked');
         const ids = Array.from(checkboxes).map(cb => cb.value);
 
-        if (ids.length === 0) {
-            // Should not happen if button disabled, but safe to keep
-            return;
-        }
+        if (ids.length === 0) return;
 
         document.getElementById('hiddenApplicantIds').value = ids.join(',');
         document.getElementById('recipientCountDisplay').innerText = `${ids.length} Applicant${ids.length > 1 ? 's' : ''} Selected`;
@@ -268,7 +270,6 @@
         }, 10);
     }
 
-    // 4. Close Modal
     function closeEmailModal() {
         const modal = document.getElementById('emailModal');
         const content = document.getElementById('modalContent');

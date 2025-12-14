@@ -1,12 +1,15 @@
 {% extends 'company_base.html' %}
 
 {% block content %}
-<div class="min-h-screen bg-slate-50 py-12 px-4">
-  <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+<div class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 py-12 px-4">
+  <div class="max-w-3xl mx-auto bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden border border-white/60">
     
-    <div class="px-8 py-6 bg-cyan-600">
-      <h2 class="text-2xl font-bold text-white">Create Job Advertisement</h2>
-      <p class="text-cyan-100">Define requirements to auto-match candidates.</p>
+    <div class="px-8 py-6 bg-gradient-to-r from-amber-500/80 via-orange-500/80 to-rose-500/80 backdrop-blur-xl">
+      <h2 class="text-3xl font-extrabold text-white flex items-center gap-3">
+        <i class="fa-solid fa-bullhorn text-3xl"></i>
+        Create Job Advertisement
+      </h2>
+      <p class="text-white/90 font-medium mt-1">Define requirements to auto-match candidates.</p>
     </div>
 
     <form method="POST" class="px-8 py-8 space-y-6" id="jobForm">
@@ -14,28 +17,29 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">Department</label>
+            <label class="block text-sm font-bold text-amber-900 mb-2">Department</label>
             {{ form.department }}
         </div>
         <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">Role / Position</label>
+            <label class="block text-sm font-bold text-amber-900 mb-2">Role / Position</label>
             {{ form.post }}
         </div>
       </div>
 
-      <!-- Academic Courses Selection (Dynamic) -->
-      <div id="coursesContainer" class="border-2 border-purple-200 rounded-lg p-6 bg-purple-50 hidden">
+      <!-- Academic Courses Selection -->
+      <div id="coursesContainer" class="border-2 border-purple-300 rounded-2xl p-6 bg-gradient-to-br from-purple-50 to-pink-50 backdrop-blur-sm hidden">
         <div class="flex items-center justify-between mb-4">
-          <label class="block text-sm font-bold text-gray-800">
-            🎓 Select Accepted Academic Courses <span class="text-red-500">*</span>
+          <label class="block text-sm font-bold text-purple-900 flex items-center gap-2">
+            <i class="fa-solid fa-graduation-cap text-purple-700 text-lg"></i>
+            Select Accepted Academic Courses <span class="text-rose-600">*</span>
           </label>
           <button type="button" id="selectAllCoursesBtn" 
-                  class="px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-semibold hover:bg-purple-600 transition">
+                  class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-bold hover:from-purple-600 hover:to-pink-600 transition shadow-lg">
             Select All
           </button>
         </div>
         
-        <p class="text-xs text-gray-600 mb-4">
+        <p class="text-xs text-purple-800 mb-4 font-medium">
           Choose which academic courses are acceptable for this specific vacancy.
           Applicants must have studied at least one of these courses.
         </p>
@@ -45,53 +49,69 @@
         </div>
         
         <div id="coursesError" class="hidden mt-3">
-          <p class="text-red-600 text-sm font-semibold">⚠️ You must select at least one course</p>
+          <p class="text-rose-700 text-sm font-bold bg-rose-100 p-3 rounded-lg border border-rose-300">
+            ⚠️ You must select at least one course
+          </p>
         </div>
       </div>
 
-      <hr class="border-gray-200">
+      <hr class="border-amber-300">
 
-      <h3 class="text-lg font-semibold text-gray-800">Candidate Requirements</h3>
+      <h3 class="text-xl font-bold text-amber-900 flex items-center gap-2">
+        <i class="fa-solid fa-user-check text-orange-600"></i>
+        Candidate Requirements
+      </h3>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Min. Experience (Years)</label>
+            <label class="block text-sm font-bold text-amber-900 mb-2">Min. Experience (Years)</label>
             {{ form.min_experience_years }}
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Required Education Level</label>
+            <label class="block text-sm font-bold text-amber-900 mb-2">Required Education Level</label>
             {{ form.required_education }}
           </div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Required Skills (Comma separated)</label>
+        <label class="block text-sm font-bold text-amber-900 mb-2">Required Skills (Comma separated)</label>
         {{ form.required_skills }}
-        <p class="text-xs text-gray-500 mt-1">Example: Python, React, Data Analysis, SQL</p>
+        <p class="text-xs text-amber-700 mt-1 font-medium">Example: Python, React, Data Analysis, SQL</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-            <label class="block text-sm font-medium text-gray-700">Application Deadline</label>
+            <label class="block text-sm font-bold text-amber-900 mb-2">Application Deadline</label>
             {{ form.deadline }}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Max Applicants</label>
+            <label class="block text-sm font-bold text-amber-900 mb-2">Max Applicants</label>
             {{ form.max_applicants }}
         </div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Job Description</label>
+        <label class="block text-sm font-bold text-amber-900 mb-2">Job Description</label>
         {{ form.description }}
       </div>
 
-      <button type="submit" id="submitBtn" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-lg transition">
-        📢 Publish Vacancy
+      <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-700 hover:via-orange-700 hover:to-rose-700 text-white font-extrabold py-4 rounded-2xl transition shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 text-lg">
+        <i class="fa-solid fa-bullhorn text-xl"></i>
+        Publish Vacancy
       </button>
     </form>
   </div>
 </div>
+
+<style>
+    input, select, textarea {
+        @apply w-full px-4 py-3 rounded-xl border-2 border-amber-200 bg-white/70 backdrop-blur-sm text-amber-900 font-medium placeholder-amber-400 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition;
+    }
+    
+    textarea {
+        @apply min-h-[120px];
+    }
+</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -105,11 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("jobForm");
 
     let currentCourses = [];
-
-    // Add Tailwind classes to inputs automatically
-    document.querySelectorAll('input, select, textarea').forEach(el => {
-        el.classList.add('w-full', 'rounded-lg', 'border-gray-300', 'p-3', 'border');
-    });
 
     // Load posts when department changes
     deptSelect.addEventListener("change", function() {
@@ -157,8 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         coursesContainer.classList.remove('hidden');
                     } else {
                         coursesList.innerHTML = `
-                            <div class="text-center py-8 text-red-600">
-                                <p class="font-semibold">⚠️ No academic courses defined for this position</p>
+                            <div class="text-center py-8 text-rose-700 bg-rose-50 rounded-xl border border-rose-200">
+                                <p class="font-bold">⚠️ No academic courses defined for this position</p>
                                 <p class="text-sm mt-2">Please update the position settings to add required courses.</p>
                             </div>
                         `;
@@ -167,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                 .catch(error => {
                     console.error('Error loading courses:', error);
-                    coursesList.innerHTML = '<p class="text-red-600">Error loading courses</p>';
+                    coursesList.innerHTML = '<p class="text-rose-700 font-bold">Error loading courses</p>';
                     coursesContainer.classList.remove('hidden');
                 });
         }
@@ -179,22 +194,22 @@ document.addEventListener("DOMContentLoaded", () => {
         
         courses.forEach(course => {
             const label = document.createElement('label');
-            label.className = 'flex items-center p-3 hover:bg-purple-100 rounded-lg cursor-pointer transition border border-purple-200';
+            label.className = 'flex items-center p-3 hover:bg-purple-100 rounded-xl cursor-pointer transition border-2 border-purple-200 bg-white/50 backdrop-blur-sm';
             
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.name = 'selected_courses';
             checkbox.value = course.id;
-            checkbox.className = 'mr-3 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded';
+            checkbox.className = 'mr-3 h-5 w-5 text-purple-600 focus:ring-purple-500 border-purple-300 rounded';
             checkbox.addEventListener('change', validateCourseSelection);
             
             const text = document.createElement('span');
-            text.className = 'text-gray-700 font-medium';
+            text.className = 'text-purple-900 font-bold';
             text.textContent = course.name;
             
             if (course.code) {
                 const code = document.createElement('span');
-                code.className = 'ml-2 text-xs text-purple-600';
+                code.className = 'ml-2 text-xs text-purple-600 font-medium';
                 code.textContent = `(${course.code})`;
                 text.appendChild(code);
             }
@@ -230,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
             coursesError.classList.remove('hidden');
             return false;
         }
-        return true; // No courses loaded yet
+        return true;
     }
 
     // Form validation before submit
@@ -241,20 +256,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!validateCourseSelection()) {
                 e.preventDefault();
                 coursesError.classList.remove('hidden');
-                
-                // Scroll to error
                 coursesContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // Show alert
                 alert('⚠️ Please select at least one academic course before submitting.');
                 return false;
             }
         }
         
-        // Disable submit button to prevent double submission
         submitBtn.disabled = true;
         submitBtn.innerHTML = `
-            <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="animate-spin h-6 w-6 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
