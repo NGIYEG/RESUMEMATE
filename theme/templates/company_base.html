@@ -12,14 +12,29 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body style="background-image: url('/static/Images/myimg.webp'); background-size: cover; background-position: center;" class="bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 font-sans flex min-h-screen">
+<body class="bg-linear-to-br from-gray-50 via-blue-50 to-slate-50 text-gray-900 font-sans flex flex-col min-h-screen">
+
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="lg:hidden fixed top-4 left-4 z-60 p-3 rounded-xl  text-[#000000] shadow-2xl hover:shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95">
+        <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </button>
+
+    <!-- Mobile Overlay -->
+    <div id="sidebar-overlay" class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity duration-300"></div>
 
     {% block sidebar %}
-    <aside class="w-64 bg-gradient-to-b from-amber-900 via-orange-900 to-rose-900 text-white flex flex-col fixed h-full shadow-2xl z-50">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-linear-to-r from-[#0D1126] to-[#1B1E59] text-white flex flex-col fixed h-full shadow-2xl z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
         
+        <!-- Logo Section -->
         <div class="h-20 flex items-center px-6 border-b border-white/20 bg-black/20 backdrop-blur-xl">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-amber-400 via-orange-400 to-rose-400 rounded-xl flex items-center justify-center font-extrabold text-amber-900 shadow-xl transform rotate-3">
+                <div class="w-10 h-10 bg-linear-to-br from-amber-400 via-orange-400 to-rose-400 rounded-xl flex items-center justify-center font-extrabold text-amber-900 shadow-xl transform rotate-3">
                     R
                 </div>
                 <div>
@@ -29,10 +44,11 @@
             </div>
         </div>
 
+        <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto py-6 space-y-2 px-4">
             <p class="px-2 text-xs font-bold text-amber-300 uppercase tracking-wider mb-3">Overview</p>
             
-            <a href="{% url 'analyzer:dashboard' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
+            <a href="{% url 'analyzer:dashboard' %}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
                 <i class="fa-solid fa-chart-pie w-5 text-center group-hover:text-amber-300"></i>
                 <span class="font-bold">Analytics Dashboard</span>
             </a>
@@ -40,54 +56,57 @@
             <div class="my-4 border-t border-white/20"></div>
             <p class="px-2 text-xs font-bold text-amber-300 uppercase tracking-wider mb-3">Recruitment</p>
 
-            <a href="{% url 'manage_jobs' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
+            <a href="{% url 'manage_jobs' %}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
                 <i class="fa-solid fa-list-check w-5 text-center group-hover:text-amber-300"></i>
                 <span class="font-bold">Manage Jobs</span>
             </a>
 
-            <a href="{% url 'job_advert' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
+            <a href="{% url 'job_advert' %}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
                 <i class="fa-solid fa-bullhorn w-5 text-center group-hover:text-amber-300"></i>
                 <span class="font-bold">Advertise Job</span>
             </a>
             
-            <a href="{% url 'add' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
+            <a href="{% url 'add' %}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-amber-100 hover:bg-white/20 hover:text-white transition-all group backdrop-blur-sm border border-transparent hover:border-white/30 shadow-sm hover:shadow-lg">
                 <i class="fa-solid fa-gears w-5 text-center group-hover:text-amber-300"></i>
                 <span class="font-bold">System Setup</span>
             </a>
         </nav>
 
+        <!-- User Profile Section -->
         <div class="p-4 border-t border-white/20 bg-black/20 backdrop-blur-xl">
             <div class="flex items-center gap-3 mb-4 p-3 bg-white/10 rounded-xl border border-white/20">
-                <div class="w-11 h-11 rounded-xl border-2 border-amber-300/50 overflow-hidden bg-white p-0.5 shadow-lg">
+                <div class="w-11 h-11 rounded-xl border-2 border-amber-300/50 overflow-hidden bg-white p-0.5 shadow-lg flex-shrink-0">
                     {% if user.company_profile.logo %}
                         <img src="{{ user.company_profile.logo.url }}" class="w-full h-full object-contain rounded-lg">
                     {% else %}
-                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-orange-100 text-amber-900 font-extrabold text-xl rounded-lg">
+                        <div class="w-full h-full flex items-center justify-center bg-linear-to-br from-amber-100 to-orange-100 text-amber-900 font-extrabold text-xl rounded-lg">
                             {{ user.company_profile.company_name|slice:":1" }}
                         </div>
                     {% endif %}
                 </div>
-                <div class="overflow-hidden">
+                <div class="overflow-hidden flex-1 min-w-0">
                     <p class="text-sm font-bold text-white truncate">{{ user.company_profile.company_name }}</p>
                     <p class="text-xs text-amber-200">Logged in</p>
                 </div>
             </div>
             
-            <a href="{% url 'company_logout' %}" class="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white rounded-xl transition-colors text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95">
+            <a href="{% url 'company_logout' %}" class="flex items-center justify-center gap-2 w-full py-3 bg-linear-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white rounded-xl transition-colors text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95">
                 <i class="fa-solid fa-right-from-bracket"></i> Sign Out
             </a>
         </div>
     </aside>
     {% endblock sidebar %}
 
-    <main class="{% block main_class %}flex-1 ml-64 p-8 overflow-y-auto{% endblock %}">
+    <!-- Main Content -->
+    <main class="{% block main_class %}flex-1 lg:ml-64 p-4 sm:p-6 lg:p-8 overflow-y-auto pt-20 lg:pt-8{% endblock %}">
         
         {% block content %}
         {% endblock %}
     </main>
 
+    <!-- Toast Messages -->
     {% if messages %}
-    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 w-full max-w-sm pointer-events-none">
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 w-full max-w-sm px-4 sm:px-0 pointer-events-none">
         {% for message in messages %}
         <div class="toast-message pointer-events-auto transform transition-all duration-500 translate-x-full opacity-0 flex items-center w-full p-4 rounded-2xl shadow-2xl border backdrop-blur-xl
             {% if message.tags == 'success' %}
@@ -98,13 +117,13 @@
                 border-amber-400/50 bg-amber-50/90 text-amber-800
             {% endif %}" role="alert">
             
-            <div class="inline-flex items-center justify-center flex-shrink-0 w-9 h-9 rounded-xl shadow-lg
+            <div class="inline-flex items-center justify-center shrink-0 w-9 h-9 rounded-xl shadow-lg
                 {% if message.tags == 'success' %}
-                    bg-gradient-to-br from-emerald-400 to-teal-500 text-white
+                    bg-linear-to-br from-emerald-400 to-teal-500 text-white
                 {% elif message.tags == 'error' %}
-                    bg-gradient-to-br from-rose-500 to-pink-600 text-white
+                    bg-linear-to-br from-rose-500 to-pink-600 text-white
                 {% else %}
-                    bg-gradient-to-br from-amber-400 to-orange-500 text-white
+                    bg-linear-to-br from-amber-400 to-orange-500 text-white
                 {% endif %}">
                 {% if message.tags == 'success' %}
                     <i class="fa-solid fa-check text-lg"></i>
@@ -115,7 +134,7 @@
                 {% endif %}
             </div>
             
-            <div class="ml-3 text-sm font-bold break-words">
+            <div class="ml-3 text-sm font-bold break-words flex-1">
                 {{ message }}
             </div>
 
@@ -127,6 +146,7 @@
     </div>
 
     <script>
+        // Toast messages animation
         document.addEventListener('DOMContentLoaded', function() {
             const toasts = document.querySelectorAll('.toast-message');
             toasts.forEach((toast, index) => {
@@ -140,6 +160,62 @@
                 }, 5000 + (index * 1000));
             });
         });
+
+        // Mobile sidebar toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+            menuIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+            
+            // Add/remove body scroll lock on mobile
+            // if (window.innerWidth < 1024) {
+            //     document.body.classList.toggle('overflow-hidden');
+            // }
+        }
+
+        // Toggle sidebar on button click
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+
+        // Close sidebar when clicking overlay
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Close sidebar when clicking a link on mobile
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 1024 && !sidebar.classList.contains('-translate-x-full')) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Close sidebar on window resize if switching to desktop
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (window.innerWidth >= 1024) {
+                    // Desktop view - ensure sidebar is visible and overlay is hidden
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.add('hidden');
+                    menuIcon.classList.remove('hidden');
+                    closeIcon.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }
+            }, 250);
+        });
+
+        // Prevent body scroll when sidebar is open on mobile
+        overlay.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
     </script>
     {% endif %}
 
